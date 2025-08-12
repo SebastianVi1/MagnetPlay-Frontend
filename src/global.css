@@ -1,0 +1,16 @@
+:root {
+  --bg: #0f1115; /* App/viewport background */
+  --surface: #151922; /* Main surface: panels, cards, controls */
+  --surface-2: #1b2030; /* Elevated/alt surface: menus, modals, hovers */
+  --text: #e8eaed; /* Primary text color */
+  --text-muted: #9aa0a6; /* Secondary/quiet text (labels, hints) */
+  --border: #2a2f3a; /* Borders and dividers */
+
+  --accent: #5b8def; /* Primary action: buttons, active states, seek bar */
+  --accent-hover: #3e5ee6; /* Hover/active state for accent elements */
+  --accent-contrast: #0b1220; /* Text/icons placed on top of accent backgrounds */
+
+  --success: #2bb673; /* Success states (e.g., saved, connected) */
+  --warning: #e0a100; /* Warnings (e.g., low buffer, slow network) */
+  --danger: #d95c60; /* Errors (e.g., load failure) */
+}
