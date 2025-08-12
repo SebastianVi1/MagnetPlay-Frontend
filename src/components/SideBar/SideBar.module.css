@@ -1,0 +1,39 @@
+.list {
+  display: flex;
+  flex-direction: column;
+}
+.nav {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+}
+.nav a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.sideBarContainer {
+  min-width: 200px;
+  background-color: var(--surface);
+}
+
+.sideBarContainer ul {
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  text-align: center;
+  padding: 2px;
+}
+
+.listItem {
+  padding: 20px 0;
+  border-radius: 6px;
+  margin: 10px;
+}
+
+.listItem:hover {
+  padding-left: 10px;
+  background-color: #fff3;
+  transition: all 1s ease;
+}

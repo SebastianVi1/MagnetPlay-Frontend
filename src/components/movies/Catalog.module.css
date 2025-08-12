@@ -1,0 +1,48 @@
+.mainContainer {
+  margin: 20px auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.mainContainer h2 {
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+/* Turn the list into a horizontal scroller (the wrapper hides overflow) */
+.mainContainer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto; /* scroll happens here */
+  overflow-y: hidden;
+  scrollbar-gutter: stable both-edges;
+  /* horizontal flow */
+  display: flex;
+  gap: 16px;
+  white-space: nowrap;
+
+  /* Themed scrollbar for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Themed scrollbar for WebKit (Chrome, Edge, Safari) */
+.mainContainer ul::-webkit-scrollbar {
+  height: 8px;
+}
+.mainContainer ul::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.movieContainer {
+  verflow-x: hidden;
+
+  /* Scrollbar theme tokens (scoped to this row) */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.28);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.38);
+  --scrollbar-track: transparent;
+}
