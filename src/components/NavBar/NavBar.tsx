@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styles from "./NavBar.module.css";
 
 function NavBar() {
@@ -5,20 +6,19 @@ function NavBar() {
     <>
       <nav className={styles.flexContainer}>
         <h1>MagnetPlay</h1>
-
         <div className={styles.navButtonsContainer}>
           <ul className={styles.ul}>
             <li className={styles.listItem}>
-              <a href="#">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li className={styles.listItem}>
-              <a href="#">Docs</a>
+              <Link to="/docs">Docs</Link>
             </li>
             <li className={styles.listItem}>
-              <a href="#">About</a>
+              <Link to="/about">About</Link>
             </li>
             <li className={styles.listItem}>
-              <a href="#">.....</a>
+              <Link to="/login">Login</Link>
             </li>
           </ul>
         </div>
