@@ -1,7 +1,7 @@
 .mainWrapper {
   display: flex;
   justify-content: center;
-  margin-top: 30%;
+  margin-top: 300px;
 }
 
 .mainContainer {
@@ -44,8 +44,12 @@
 
 form {
   width: 75%;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
 }
-.input {
+.input,
+.inputP {
   width: 100%;
   padding: 10px 10px;
   display: block;
@@ -56,6 +60,10 @@ form {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.inputP {
+  margin-bottom: 0;
 }
 .input:hover {
   background-color: #f0f0f0;
@@ -83,7 +91,7 @@ form {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 0;
+  padding: 7px 0;
   border: 1px solid #dadce0;
   border-radius: 4px;
   background-color: #fff;
@@ -92,6 +100,7 @@ form {
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
+  margin-bottom: 10px;
 }
 
 .buttonGoogle:hover {
@@ -106,6 +115,58 @@ form {
 }
 
 .hr {
-  border: 1px solid var(--border);
+  height: 1px;
+  background-color: var(--border);
+  border: none;
+  width: 100%;
+  margin: 0.5rem auto;
+  color: var(--border);
+}
+
+.forgotPassword {
+  font-size: small;
+  margin-bottom: 15px;
+  text-decoration: none;
+}
+
+.dividerContainer {
+  margin: 10px;
+  padding: 0;
+  display: flex;
   width: 75%;
+  align-items: center;
+}
+
+.dividerContainer::before,
+.dividerContainer::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--border);
+}
+
+.dividerContainer::before {
+  margin-right: 8px;
+}
+
+.dividerContainer::after {
+  margin-left: 8px;
+}
+
+.dividerContainer p {
+  font-size: 12px;
+  margin: 0 3px;
+  white-space: nowrap;
+}
+
+.registerP {
+  display: inline-block;
+  font-size: small;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  font-size: small;
+  color: darkblue;
 }

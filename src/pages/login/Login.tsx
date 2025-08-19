@@ -1,7 +1,7 @@
 import axios from "axios";
 import styles from "./Login.module.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/bg-login.jpg";
 import Button from "react-bootstrap/Button";
 import googleLogo from "../../assets/google_logo.jpg";
@@ -47,13 +47,16 @@ export default function Login() {
               required
             />
             <input
-              className={styles.input}
+              className={styles.inputP}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               required
             />
+            <a href="" className={styles.forgotPassword}>
+              Forgot your Password?
+            </a>
             <Button
               variant="primary"
               className={styles.buttonLogin}
@@ -63,11 +66,16 @@ export default function Login() {
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
-          <hr className={styles.hr}></hr>
+          <div className={styles.dividerContainer}>
+            <hr className={styles.hr} /> <p>Or, Login with</p>{" "}
+            <hr className={styles.hr}></hr>
+          </div>
           <button type="button" className={styles.buttonGoogle}>
             <img src={googleLogo} alt="Google logo" />
             Continue with google
           </button>
+          <p className={styles.registerP}>Don't have an accont ?</p>
+          <Link to={"/register"}>Register here</Link>
         </div>
         <div className={styles.imageContainer}>
           <img src={logo} alt="Logo image" />
