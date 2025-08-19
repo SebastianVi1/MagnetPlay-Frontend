@@ -2,7 +2,12 @@
   border-radius: 10px;
   overflow: hidden;
   min-width: 250px;
+  max-width: 300px;
   transition: transform 0.18s ease;
+  position: relative; /* needed for absolute overlay */
+  display: block;
+  background: #1b1e22;
+  margin-bottom: 20px;
 }
 
 .card:hover {
@@ -12,15 +17,72 @@
 }
 
 .imageContainer {
+  max-width: none; /* remove overly large constraint */
   width: 100%;
+  aspect-ratio: 2 / 3; /* consistent poster ratio */
+  position: relative;
+  background: #262b33;
+  overflow: hidden;
 }
 
 .card img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: cover;
 
   transition: transform 0.2s ease;
 }
 
 .card:hover img {
   transform: scale(1.03);
+}
+
+.hoverInfo {
+  /* overlay panel hidden by default */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 12px 12px;
+  background: linear-gradient(180deg);
+  color: #fff;
+  font-size: 0.8rem; /* smaller, readable */
+  line-height: 1.15;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.card:hover .hoverInfo,
+.card:focus-within .hoverInfo {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: -webkit-box;
+
+  -webkit-line-clamp: 1; /* single line for title */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.desc {
+  margin: 0;
+  opacity: 0.85;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* limit lines of description */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.card:focus-visible {
+  outline: 2px solid #6aa9ff;
+  outline-offset: 2px;
 }
