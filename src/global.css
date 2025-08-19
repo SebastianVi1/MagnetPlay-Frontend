@@ -14,3 +14,11 @@
   --warning: #e0a100; /* Warnings (e.g., low buffer, slow network) */
   --danger: #d95c60; /* Errors (e.g., load failure) */
 }
+html {
+  box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}

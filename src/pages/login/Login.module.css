@@ -1,0 +1,111 @@
+.mainWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 30%;
+}
+
+.mainContainer {
+  display: flex;
+  align-items: center;
+  background-color: #fefefe;
+  width: 100%;
+  max-width: 800px;
+  border-radius: 15px;
+}
+
+.mainContainer h2 p {
+  color: var(--text);
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.imageContainer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.imageContainer img {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  object-fit: contain;
+  display: block;
+  width: 100%;
+  max-width: 400px;
+}
+
+form {
+  width: 75%;
+}
+.input {
+  width: 100%;
+  padding: 10px 10px;
+  display: block;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #0003;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+.input:hover {
+  background-color: #f0f0f0;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+  background-color: #fff;
+}
+.input::placeholder {
+  color: #aaa;
+}
+
+.buttonLogin {
+  width: 100%;
+  box-shadow: 0 0 10px #0005;
+}
+.buttonLogin:hover {
+  color: white;
+}
+
+.buttonGoogle {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #3c4043;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.buttonGoogle:hover {
+  background-color: #f7f8fa;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.buttonGoogle img {
+  height: 18px;
+  width: 18px;
+  margin-right: 8px;
+}
+
+.hr {
+  border: 1px solid var(--border);
+  width: 75%;
+}
