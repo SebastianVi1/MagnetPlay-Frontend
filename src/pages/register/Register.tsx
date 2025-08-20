@@ -34,7 +34,7 @@ function Register() {
               required
             />
             <input
-              className={styles.inputP}
+              className={styles.inputPassword}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -42,9 +42,6 @@ function Register() {
               required
             />
 
-            <a href="" className={styles.forgotPassword}>
-              Forgot your Password?
-            </a>
             <Button
               variant="primary"
               className={styles.buttonLogin}
