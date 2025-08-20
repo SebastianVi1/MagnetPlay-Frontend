@@ -4,6 +4,7 @@ import Home from "../pages/home/Home";
 import Login from "../pages/login/Login";
 
 import type { ReactNode } from "react";
+import Register from "../pages/register/Register";
 
 export interface AppRoute {
   path: string;
@@ -32,6 +33,15 @@ export const routes: AppRoute[] = [
       </Layout>
     ),
     title: "Login",
+  },
+  {
+    path: "/Register",
+    element: (
+      <Layout showNav={false} showSidebar={false}>
+        <Register></Register>
+      </Layout>
+    ),
+    title: "Register",
   },
   {
     path: "/about",
