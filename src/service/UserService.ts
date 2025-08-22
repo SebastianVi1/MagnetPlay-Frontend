@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { User, LoginCredentials, RegisterCredentials, LoginResponse, RegisterResponse, BackendLoginResponse } from "../models/auth";
+import type { LoginCredentials, RegisterCredentials,  RegisterResponse, BackendLoginResponse } from "../models/auth";
 
 const baseUri: string = "/api";
 
@@ -40,7 +40,6 @@ export function loginUser(credentials: LoginCredentials): Promise<BackendLoginRe
     console.log("user logged in");
     
     const {user, token} = response.data;
-    
     if (!token || typeof token !== 'string') {
       throw new Error("Invalid token received from server");
     }
@@ -51,6 +50,7 @@ export function loginUser(credentials: LoginCredentials): Promise<BackendLoginRe
     throw new Error("Bad credentials");
   });
 }
+
 
 export function signUpUser(credentials: RegisterCredentials): Promise<RegisterResponse> {
   return axios.post<RegisterResponse>(
@@ -66,5 +66,6 @@ export function signUpUser(credentials: RegisterCredentials): Promise<RegisterRe
 }
 
 export function logoutUser() {
-  return axios.post(baseUri + "/auth/logout");
+  localStorage.clear();
+
 }

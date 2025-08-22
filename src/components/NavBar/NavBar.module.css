@@ -48,3 +48,9 @@
   margin-left: 30px;
   color: var(--text);
 }
+.flexContainer button {
+  background: none;
+  border: none;
+  color: var(--text);
+  font: inherit;
+}

@@ -48,25 +48,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Clear any existing tokens on initialization
   React.useEffect(() => {
+
     const existingToken = localStorage.getItem("token");
     const existingUser = localStorage.getItem("user");
     
+
     
-    // Clear any existing data to start fresh
-    if (existingToken || existingUser) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+    if (existingToken && existingUser){
+      try{
+        const user = JSON.parse(existingUser);
+          //TODO: verify if the token is valid still
+          
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: {user, token: existingToken}
+        })
+
+      }
+      catch( err){
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
     }
     
     console.log("🔍 AuthProvider - Initialization complete"); // Debug log
   }, []);
 
   function isAuthenticated(){
+
     if (state.user && state.token){
+      console.log(state.user + state.token);
       return true
-      
     }
-    return false;
   }
 
   async function signIn(credentials: LoginCredentials) {
