@@ -3,25 +3,49 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import abstractBg from "../../assets/bg_register.jpg";
-
+import { useAuth } from "../../hooks/useAuth"; // 
 function Register() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { signUp } = useAuth(); //  Use signUp from auth context
+
+  const handleOnClickRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      //Call signUp function from auth context
+      await signUp({ username, email, password });
+      console.log("Registration successful");
+      
+      //Redirect to login after successful registration
+      navigate("/login");
+      
+    } catch (err) {
+      console.error("Registration error:", err);
+      setError("Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={styles.mainWrapper}>
       <div className={styles.mainContainer}>
         <div className={styles.formContainer}>
           <h3>Create Account</h3>
-          <form>
+          <form onSubmit={handleOnClickRegister}>
             {error && <p style={{ color: "red" }}>{error}</p>}
             <input
               className={styles.inputP}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"  // Changed from email to text for username
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}  // Fixed onChange handler
               placeholder="Username"
               required
             />
@@ -29,7 +53,7 @@ function Register() {
               className={styles.inputP}
               type="email"
               value={email}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}  
               placeholder="Email"
               required
             />
@@ -48,7 +72,7 @@ function Register() {
               type="submit"
               disabled={loading}
             >
-              {loading ? "... " : "Register"}
+              {loading ? "Registering..." : "Register"}
             </Button>
           </form>
           <p className={styles.registerP}>You already have an account?</p>

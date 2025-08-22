@@ -6,11 +6,14 @@ import Movie from "../../components/movieCard/MovieCard";
 // Define the shape of a Movie object returned by the API
 interface Movie {
   id: number;
-  title: string;
+  name: string;
   description: string;
-  imageUri: string;
+  date: string;
+  screenshot: Array<string>;
+  category: string;
+  posterUri: string;
   magnetUri: string;
-  categories: string[];
+  hash: string;
 }
 
 function Home() {
@@ -24,8 +27,9 @@ function Home() {
   useEffect(() => {
     // Fetch movies organized by categories from backend
     axios
-      .get("http://localhost:8080/api/movies/categories")
+      .get("/api/movies/categories")
       .then((res) => {
+        console.log(res.data);
         setMoviesByCategory(res.data);
       })
       .catch((error) => {
@@ -55,9 +59,9 @@ function Home() {
                   <Movie
                     key={m.id}
                     id={m.id}
-                    title={m.title}
+                    title={m.name}
                     description={m.description}
-                    posterUrl={m.imageUri}
+                    posterUrl={m.posterUri}
                   />
                 ))}
               </ul>

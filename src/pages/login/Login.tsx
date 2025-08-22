@@ -28,12 +28,16 @@ export default function Login() {
 
     try {
       await signIn({ username, password });
+      console.log("🔍 Login component - signIn completed successfully"); // Debug log
+      
       navigate("/");
+   
     } catch (err: unknown) {
       console.error("Login error:", err);
       setError("Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
+      
     }
   };
 
