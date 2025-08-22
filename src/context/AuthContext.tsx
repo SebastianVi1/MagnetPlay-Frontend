@@ -36,6 +36,7 @@ type AuthContextType = {
   signIn: (credentials: LoginCredentials) => Promise<void>;
   signOut: () => void;
   signUp: (credentials: RegisterCredentials) => Promise<void>;
+  isAuthenticated: () => boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(
@@ -47,13 +48,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Clear any existing tokens on initialization
   React.useEffect(() => {
-    console.log("🔍 AuthProvider - Initializing, checking localStorage"); // Debug log
-    
     const existingToken = localStorage.getItem("token");
     const existingUser = localStorage.getItem("user");
     
-    console.log("🔍 AuthProvider - Existing token:", existingToken); // Debug log
-    console.log("🔍 AuthProvider - Existing user:", existingUser); // Debug log
     
     // Clear any existing data to start fresh
     if (existingToken || existingUser) {
@@ -64,6 +61,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     console.log("🔍 AuthProvider - Initialization complete"); // Debug log
   }, []);
 
+  function isAuthenticated(){
+    if (state.user && state.token){
+      return true
+      
+    }
+    return false;
+  }
+
   async function signIn(credentials: LoginCredentials) {
     dispatch({ type: "LOGIN_START" });
     try {
@@ -71,15 +76,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await loginUser(credentials);
       
       const token = await loginUser(credentials);
-      console.log("🔍 signIn - Token received:", token); // Debug log
       
       // Backend returns just the token, so we need to create user object
       if (!token || typeof token !== 'string') {
-        console.log("🔍 signIn - Invalid token received"); // Debug log
         throw new Error("Invalid token received from server");
       }
       
-      // ✅ FIX: Create user object from JWT token payload
+      //  Create user object from JWT token payload
       const user = {
         id: 0, // Will be extracted from token
         username: credentials.username, // Use credentials username
@@ -94,7 +97,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       // Verify token was stored
       const storedToken = localStorage.getItem("token");
-      console.log("🔍 signIn - Token stored in localStorage:", storedToken); // Debug log
       
       dispatch({ type: "LOGIN_SUCCESS", payload: { user, token } });
       console.log("🔍 signIn - Login successful, state updated"); // Debug log
@@ -136,7 +138,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ state, dispatch, signIn, signOut, signUp }}>
+    <AuthContext.Provider value={{ state, dispatch, signIn, signOut, signUp, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

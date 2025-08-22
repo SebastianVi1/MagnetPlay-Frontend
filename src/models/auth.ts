@@ -25,7 +25,13 @@ export type RegisterResponse = {
   message: string;
 };
 
-export type BackendLoginResponse = string; // Just the JWT token
+export type BackendLoginResponse = {
+ user: {
+  id: number;
+  username: string;
+ },
+ token: string;
+}; // Just the JWT token
 
 export type AuthState = {
   user: User | null;

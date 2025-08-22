@@ -32,15 +32,14 @@ axios.interceptors.response.use(
   }
 );
 
-export function loginUser(credentials: LoginCredentials): Promise<String> {
-  
+export function loginUser(credentials: LoginCredentials): Promise<BackendLoginResponse> {
   return axios.post<BackendLoginResponse>(
     baseUri + "/auth/login",
     credentials
   ).then((response) => {
     console.log("user logged in");
     
-    const token = response.data;
+    const {user, token} = response.data;
     
     if (!token || typeof token !== 'string') {
       throw new Error("Invalid token received from server");
