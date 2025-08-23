@@ -23,21 +23,20 @@ export default function Login() {
 
   const handleOnClickLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-
+    
     try {
-      await signIn({ username, password });
-      console.log("🔍 Login component - signIn completed successfully"); // Debug log
+      setLoading(true);
+      setError(null);
       
-      navigate("/");
-   
+      await signIn({ username, password });
+      console.log("🔍 Login component - signIn completed successfully");
+      
     } catch (err: unknown) {
-      console.error("Login error:", err);
-      setError("Invalid credentials. Please try again.");
+      console.error("🔍 Login component - Error:", err);
+      const errorMessage = err instanceof Error ? err.message : "Invalid credentials. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
-      
     }
   };
 

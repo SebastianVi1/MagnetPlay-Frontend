@@ -1,5 +1,10 @@
 import React, { createContext, useReducer, type ReactNode } from "react";
-import { loginUser, logoutUser, signUpUser } from "../service/UserService";
+import {
+  loginUser,
+  logoutUser,
+  signUpUser,
+  validateToken,
+} from "../service/UserService";
 import {
   type AuthState,
   type AuthAction,
@@ -8,6 +13,7 @@ import {
   type RegisterCredentials,
 } from "../models/auth";
 
+import { useNavigate } from "react-router-dom";
 function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case "LOGIN_START":
@@ -39,87 +45,71 @@ type AuthContextType = {
   isAuthenticated: () => boolean;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
-
+  const navigate = useNavigate();
   // Clear any existing tokens on initialization
   React.useEffect(() => {
-
-    const existingToken = localStorage.getItem("token");
-    const existingUser = localStorage.getItem("user");
-    
-
-    
-    if (existingToken && existingUser){
-      try{
-        const user = JSON.parse(existingUser);
-          //TODO: verify if the token is valid still
-          
-        dispatch({
-          type: "LOGIN_SUCCESS",
-          payload: {user, token: existingToken}
-        })
-
+    (async () => {
+      const existingToken = localStorage.getItem("token");
+      const existingUser = localStorage.getItem("user");
+      if (existingToken && existingUser) {
+        try {
+          const user = JSON.parse(existingUser);
+          const valid = await validateToken(existingToken);
+          console.log("validating token...")
+          if (!valid) {
+            dispatch({
+              type: "LOGIN_ERROR",
+              payload: "Expired or Invalid token",
+            });
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login");
+            return;
+          }
+          dispatch({
+            type: "LOGIN_SUCCESS",
+            payload: { user, token: existingToken },
+          });
+        } catch (err) {
+        }
       }
-      catch( err){
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-      }
-    }
-    
-    console.log("🔍 AuthProvider - Initialization complete"); // Debug log
+      console.log("🔍 AuthProvider - Initialization complete");
+    })();
   }, []);
 
-  function isAuthenticated(){
-
-    if (state.user && state.token){
-      console.log(state.user + state.token);
-      return true
-    }
+  function isAuthenticated(): boolean {
+    return !!(state.user && state.token);
   }
 
   async function signIn(credentials: LoginCredentials) {
-    dispatch({ type: "LOGIN_START" });
     try {
-      console.log("hello");
-      const response = await loginUser(credentials);
+      dispatch({ type: "LOGIN_START" });
       
-      const token = await loginUser(credentials);
-      
-      // Backend returns just the token, so we need to create user object
-      if (!token || typeof token !== 'string') {
-        throw new Error("Invalid token received from server");
-      }
-      
-      //  Create user object from JWT token payload
-      const user = {
-        id: 0, // Will be extracted from token
-        username: credentials.username, // Use credentials username
-        email: "", // Will be empty for now
+      const { user, token } = await loginUser(credentials);
+
+      const normalizedUser = {
+        id: user.id,
+        username: user.username,
+        email: "", // Backend doesn't return email in login response
       };
       
-
-      
-      console.log("🔍 signIn - Storing token in localStorage"); // Debug log
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
       
-      // Verify token was stored
-      const storedToken = localStorage.getItem("token");
-      
-      dispatch({ type: "LOGIN_SUCCESS", payload: { user, token } });
-      console.log("🔍 signIn - Login successful, state updated"); // Debug log
-      
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        payload: { user: normalizedUser, token },
+      });
+      navigate("/");
     } catch (error: unknown) {
-      let errorMessage = "An unknown error occurred";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
       dispatch({ type: "LOGIN_ERROR", payload: errorMessage });
+      throw error; //rethrow so the component can handle it
     }
   }
 
@@ -127,34 +117,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await logoutUser();
     } catch {
-      // handle logout error
+      /* ignore logout errors */
     }
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     dispatch({ type: "LOGOUT" });
+    navigate("/login");
   }
 
-  
   async function signUp(credentials: RegisterCredentials) {
+    dispatch({ type: "LOGIN_START" });
     try {
-      // Call signUpUser service
-      const response = await signUpUser(credentials);
-      console.log("User registered successfully:", response);
-      
-      // Optionally auto-login after registration
-      // Or redirect to login page
-      
-    } catch (error) {
-      console.error("SignUp error:", error);
-      throw error; // Re-throw to let component handle it
+      const response = await signUpUser(credentials); // { user, token }
+      const { user, token } = response;
+      console.log(user);
+      if (!token || typeof token !== "string") {
+        throw new Error("Invalid token received from server");
+      }
+      const normalizedUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email ?? credentials.email,
+      };
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        payload: { user: normalizedUser, token },
+      });
+      navigate("/");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Registration failed";
+      console.log(errorMessage);
+      dispatch({ type: "LOGIN_ERROR", payload: errorMessage });
+      throw error;
     }
   }
 
   return (
-    <AuthContext.Provider value={{ state, dispatch, signIn, signOut, signUp, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{ state, dispatch, signIn, signOut, signUp, isAuthenticated }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export {AuthContext}
+export { AuthContext };

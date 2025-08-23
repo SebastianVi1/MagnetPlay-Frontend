@@ -29,7 +29,6 @@ function Home() {
     axios
       .get("/api/movies/categories")
       .then((res) => {
-        console.log(res.data);
         setMoviesByCategory(res.data);
       })
       .catch((error) => {

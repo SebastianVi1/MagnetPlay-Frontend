@@ -3,14 +3,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import abstractBg from "../../assets/bg_register.jpg";
-import { useAuth } from "../../hooks/useAuth"; // 
+import { useAuth } from "../../hooks/useAuth"; //
 function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
   const { signUp } = useAuth(); //  Use signUp from auth context
 
   const handleOnClickRegister = async (e: React.FormEvent) => {
@@ -19,16 +18,15 @@ function Register() {
     setError(null);
 
     try {
+      console.log("Attempting registration with:", { username, email, password: "***" });
+      
       //Call signUp function from auth context
       await signUp({ username, email, password });
       console.log("Registration successful");
-      
-      //Redirect to login after successful registration
-      navigate("/login");
-      
     } catch (err) {
-      console.error("Registration error:", err);
-      setError("Registration failed. Please try again.");
+      console.error("Registration error in component:", err);
+      const errorMessage = err instanceof Error ? err.message : "Registration failed. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -43,9 +41,9 @@ function Register() {
             {error && <p style={{ color: "red" }}>{error}</p>}
             <input
               className={styles.inputP}
-              type="text"  // Changed from email to text for username
+              type="text" // Changed from email to text for username
               value={username}
-              onChange={(e) => setUsername(e.target.value)}  // Fixed onChange handler
+              onChange={(e) => setUsername(e.target.value)} // Fixed onChange handler
               placeholder="Username"
               required
             />
@@ -53,7 +51,7 @@ function Register() {
               className={styles.inputP}
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}  
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               required
             />
