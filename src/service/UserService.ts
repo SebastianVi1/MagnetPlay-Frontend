@@ -5,6 +5,7 @@ import type {
   RegisterResponse,
   BackendLoginResponse,
 } from "../models/auth";
+import { redirect } from "react-router-dom";
 
 const baseUri: string = "/api";
 
@@ -137,16 +138,23 @@ export function logoutUser() {
 }
 
 export async function validateToken(token: string): Promise<boolean> {
-  try {
     // Let the axios interceptor handle the Authorization header automatically
     // The token is already in localStorage, so the interceptor will add it
-    const { data } = await axios.post<{ valid: boolean }>(
+    await axios.post<{ isValid: boolean }>(
       baseUri + "/auth/validate",
-      {} // Empty body - no need to send token here
-    );
-    return !!data.valid;
-  } catch (error) {
-    console.log("🔍 validateToken - Error:", error);
-    return false;
+      
+    ).then( (res) => {
+      if (!res.data.isValid)  {
+        logoutUser();
+        return false;
+      }
+    }
+    ).catch ((err) => {
+      console.log("Problem occurred: " + err);
+    }).finally ( () => {
+      console.log("token validated")}
+    )
+    return true;
+  
   }
-}
+
