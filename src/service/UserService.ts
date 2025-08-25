@@ -11,7 +11,7 @@ const baseUri: string = "/api";
 
 // Configure axios defaults for better debugging
 axios.defaults.timeout = 10000;
-axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.withCredentials = false; // Disable credentials for cross-origin requests
 
 //interceptor to include jwt token in future requests
@@ -35,10 +35,10 @@ axios.interceptors.response.use(
     // Only handle 401 errors (unauthorized) - not validation errors
     if (error.response?.status === 401) {
       // Check if this is a validation request to avoid clearing session unnecessarily
-      if (error.config?.url?.includes('/auth/validate')) {
+      if (error.config?.url?.includes("/auth/validate")) {
         return Promise.reject(error);
       }
-      
+
       // Only redirect if not already on login page
       if (window.location.pathname !== "/login") {
         localStorage.removeItem("token");
@@ -46,7 +46,7 @@ axios.interceptors.response.use(
         window.location.href = "/login";
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -72,10 +72,10 @@ export async function loginUser(
         typeof data === "object" && data !== null && "message" in data
           ? (data as { message: string }).message
           : undefined;
-      
+
       console.log(`Login failed with status: ${status}`);
       console.log(`Backend message: ${backendMessage}`);
-      
+
       if (status === 401) {
         throw new Error(backendMessage || "Invalid username or password");
       }
@@ -86,7 +86,9 @@ export async function loginUser(
         throw new Error(backendMessage || "Access denied");
       }
       if (status === 500) {
-        throw new Error(backendMessage || "Internal server error - contact administrator");
+        throw new Error(
+          backendMessage || "Internal server error - contact administrator"
+        );
       }
     }
     console.error("Login error:", err);
@@ -111,10 +113,10 @@ export async function signUpUser(
         typeof data === "object" && data !== null && "message" in data
           ? (data as { message: string }).message
           : undefined;
-      
+
       console.log(`Registration failed with status: ${status}`);
       console.log(`Backend message: ${backendMessage}`);
-      
+
       if (status === 409) {
         throw new Error(backendMessage || "Username or email already exists");
       }
@@ -122,10 +124,15 @@ export async function signUpUser(
         throw new Error(backendMessage || "Invalid registration data");
       }
       if (status === 403) {
-        throw new Error(backendMessage || "Not allowed to register - check backend configuration");
+        throw new Error(
+          backendMessage ||
+            "Not allowed to register - check backend configuration"
+        );
       }
       if (status === 500) {
-        throw new Error(backendMessage || "Internal server error - contact administrator");
+        throw new Error(
+          backendMessage || "Internal server error - contact administrator"
+        );
       }
     }
     console.error("Registration error:", err);
@@ -138,23 +145,21 @@ export function logoutUser() {
 }
 
 export async function validateToken(token: string): Promise<boolean> {
-    // Let the axios interceptor handle the Authorization header automatically
-    // The token is already in localStorage, so the interceptor will add it
-    await axios.post<{ isValid: boolean }>(
-      baseUri + "/auth/validate",
-      
-    ).then( (res) => {
-      if (!res.data.isValid)  {
+  // Let the axios interceptor handle the Authorization header automatically
+  // The token is already in localStorage, so the interceptor will add it
+  await axios
+    .post<{ isValid: boolean }>(baseUri + "/auth/validate", token)
+    .then((res) => {
+      if (!res.data.isValid) {
         logoutUser();
         return false;
       }
-    }
-    ).catch ((err) => {
+    })
+    .catch((err) => {
       console.log("Problem occurred: " + err);
-    }).finally ( () => {
-      console.log("token validated")}
-    )
-    return true;
-  
-  }
-
+    })
+    .finally(() => {
+      console.log("token validated");
+    });
+  return true;
+}

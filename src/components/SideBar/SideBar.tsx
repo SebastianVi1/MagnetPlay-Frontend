@@ -1,22 +1,30 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "./SideBar.module.css";
 
 function SideBar() {
+  const [activeItem, setActiveItem] = useState("home");
+
+  const toggleActive = (itemName: string) => {
+    setActiveItem(itemName);
+  };
+
   return (
     <>
       <div className={styles.sideBarContainer}>
         <nav className={styles.nav}>
           <ul>
-            <li className={styles.listItem}>
-              <a href="">Home</a>
+            <li 
+              className={`${styles.listItem} ${activeItem === "home" ? styles.active : ""}`} 
+              onClick={() => toggleActive("home")}
+            >
+              <Link to="/" className={styles.link}>Home</Link>
             </li>
-            <li className={styles.listItem}>
-              <a href="">Watch List</a>
-            </li>
-            <li className={styles.listItem}>
-              <a href=""></a>
-            </li>
-            <li className={styles.listItem}>
-              <a href=""></a>
+            <li 
+              className={`${styles.listItem} ${activeItem === "watchlist" ? styles.active : ""}`} 
+              onClick={() => toggleActive("watchlist")}
+            >
+              <Link to="/watchlist" className={styles.link}>Watch List</Link>
             </li>
           </ul>
         </nav>
