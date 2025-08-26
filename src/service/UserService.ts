@@ -33,7 +33,9 @@ axios.interceptors.response.use(
   },
   (error) => {
     // Only handle 401 errors (unauthorized) - not validation errors
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      //TODO: ADD REFRESH TOKEN
+
       // Check if this is a validation request to avoid clearing session unnecessarily
       if (error.config?.url?.includes("/auth/validate")) {
         return Promise.reject(error);
@@ -148,7 +150,7 @@ export async function validateToken(token: string): Promise<boolean> {
   // Let the axios interceptor handle the Authorization header automatically
   // The token is already in localStorage, so the interceptor will add it
   await axios
-    .post<{ isValid: boolean }>(baseUri + "/auth/validate", token)
+    .post<{ isValid: boolean }>("api/auth/validate", token)
     .then((res) => {
       if (!res.data.isValid) {
         logoutUser();
@@ -162,4 +164,13 @@ export async function validateToken(token: string): Promise<boolean> {
       console.log("token validated");
     });
   return true;
+}
+
+export async function getFavoriteMovies(userId: number) {
+  await axios
+    .get(baseUri + `/user/${userId}/favorites`)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => console.log(err));
 }

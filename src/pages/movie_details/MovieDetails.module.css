@@ -1,0 +1,10 @@
+.mainWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mainContainer {
+  width: 100%;
+  background: linear-gradient(to bottom, #fffe, #fff4);
+}

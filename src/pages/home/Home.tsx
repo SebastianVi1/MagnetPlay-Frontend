@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "./Home.module.css";
 import axios from "axios";
 import Movie from "../../components/movieCard/MovieCard";
+import { Link } from "react-router-dom";
 
 // Define the shape of a Movie object returned by the API
 interface Movie {
@@ -54,14 +55,17 @@ function Home() {
             <div className={styles.movieContainer}>
               <ul>
                 {/* Render each movie in this category as a MovieCard */}
+
                 {movies.map((m) => (
-                  <Movie
-                    key={m.id}
-                    id={m.id}
-                    title={m.name}
-                    description={m.description}
-                    posterUrl={m.posterUri}
-                  />
+                  <Link to={`movie/${m.id}`}>
+                    <Movie
+                      key={m.id}
+                      id={m.id}
+                      title={m.name}
+                      description={m.description}
+                      posterUrl={m.posterUri}
+                    />
+                  </Link>
                 ))}
               </ul>
             </div>
@@ -71,4 +75,3 @@ function Home() {
   );
 }
 export default Home;
-

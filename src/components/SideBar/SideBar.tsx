@@ -14,17 +14,25 @@ function SideBar() {
       <div className={styles.sideBarContainer}>
         <nav className={styles.nav}>
           <ul>
-            <li 
-              className={`${styles.listItem} ${activeItem === "home" ? styles.active : ""}`} 
+            <li
+              className={`${styles.listItem} ${
+                activeItem === "home" ? styles.active : ""
+              }`}
               onClick={() => toggleActive("home")}
             >
-              <Link to="/" className={styles.link}>Home</Link>
+              <Link to="/" className={styles.link}>
+                Home
+              </Link>
             </li>
-            <li 
-              className={`${styles.listItem} ${activeItem === "watchlist" ? styles.active : ""}`} 
+            <li
+              className={`${styles.listItem} ${
+                activeItem === "favorites" ? styles.active : ""
+              }`}
               onClick={() => toggleActive("watchlist")}
             >
-              <Link to="/watchlist" className={styles.link}>Watch List</Link>
+              <Link to="/favorites" className={styles.link}>
+                Favorites
+              </Link>
             </li>
           </ul>
         </nav>

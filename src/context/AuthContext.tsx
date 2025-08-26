@@ -1,4 +1,9 @@
-import React, { createContext, useReducer, type ReactNode } from "react";
+import React, {
+  createContext,
+  useEffect,
+  useReducer,
+  type ReactNode,
+} from "react";
 import {
   loginUser,
   logoutUser,
@@ -51,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
   const navigate = useNavigate();
   // Clear any existing tokens on initialization
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       const existingToken = localStorage.getItem("token");
       const existingUser = localStorage.getItem("user");
@@ -59,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           const user = JSON.parse(existingUser);
           const valid = await validateToken(existingToken);
-          console.log("validating token...")
+          console.log("validating token...");
           if (!valid) {
             dispatch({
               type: "LOGIN_ERROR",
@@ -75,11 +80,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             payload: { user, token: existingToken },
           });
         } catch (err) {
+          console.log(err);
         }
       }
       console.log("🔍 AuthProvider - Initialization complete");
     })();
-  }, []);
+  }, [navigate]);
 
   function isAuthenticated(): boolean {
     return !!(state.user && state.token);
@@ -88,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   async function signIn(credentials: LoginCredentials) {
     try {
       dispatch({ type: "LOGIN_START" });
-      
+
       const { user, token } = await loginUser(credentials);
 
       const normalizedUser = {
@@ -96,10 +102,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         username: user.username,
         email: "", // Backend doesn't return email in login response
       };
-      
+
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(normalizedUser));
-      
+
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: { user: normalizedUser, token },
@@ -115,7 +121,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function signOut() {
     try {
-      await logoutUser();
+      logoutUser();
     } catch {
       /* ignore logout errors */
     }

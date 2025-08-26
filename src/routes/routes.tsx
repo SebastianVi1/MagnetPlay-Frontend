@@ -5,6 +5,8 @@ import Login from "../pages/login/Login";
 
 import type { ReactNode } from "react";
 import Register from "../pages/register/Register";
+import Favorites from "../pages/favorites/Favorites";
+import MovieDetails from "../pages/movie_details/MovieDetails";
 
 export interface AppRoute {
   path: string;
@@ -35,13 +37,22 @@ export const routes: AppRoute[] = [
     title: "Login",
   },
   {
-    path: "/Register",
+    path: "/register",
     element: (
       <Layout showNav={false} showSidebar={false}>
         <Register></Register>
       </Layout>
     ),
     title: "Register",
+  },
+  {
+    path: "/favorites",
+    element: (
+      <Layout showNav={true} showSidebar={true}>
+        <Favorites />
+      </Layout>
+    ),
+    title: "Favorites",
   },
   {
     path: "/about",
@@ -51,6 +62,15 @@ export const routes: AppRoute[] = [
       </Layout>
     ),
     title: "About",
+  },
+  {
+    path: "/movie/:movieId",
+    element: (
+      <Layout showNav={true} showSidebar={false}>
+        <MovieDetails />
+      </Layout>
+    ),
+    title: "Details",
   },
 ];
 
