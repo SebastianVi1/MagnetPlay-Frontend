@@ -8,7 +8,8 @@ import {
   loginUser,
   logoutUser,
   signUpUser,
-  validateToken,
+  validateAccesToken,
+  validateRefreshToken,
 } from "../service/UserService";
 import {
   type AuthState,
@@ -63,18 +64,67 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (existingToken && existingUser) {
         try {
           const user = JSON.parse(existingUser);
-          const valid = await validateToken(existingToken);
+          const valid = await validateAccesToken(existingToken);
           console.log("validating token...");
+
           if (!valid) {
+            console.log("Token expired, trying to refresh...");
+            const existingRefreshToken = localStorage.getItem("refreshToken");
+
+            if (existingRefreshToken) {
+              try {
+                // Backend returns User, Token and RefreshToken
+                const refreshRes = await validateRefreshToken(
+                  existingRefreshToken
+                );
+
+                if (
+                  refreshRes &&
+                  typeof refreshRes === "object" &&
+                  refreshRes.token
+                ) {
+                  const newToken = refreshRes.token;
+                  const newRefreshToken = refreshRes.refreshToken;
+                  const refreshedUser = refreshRes.user ?? user;
+
+                  localStorage.setItem("token", newToken);
+                  if (newRefreshToken && typeof newRefreshToken === "string") {
+                    localStorage.setItem("refreshToken", newRefreshToken);
+                  }
+                  // if backend return a new update credentials
+                  localStorage.setItem("user", JSON.stringify(refreshedUser));
+
+                  dispatch({
+                    type: "LOGIN_SUCCESS",
+                    payload: { user: refreshedUser, token: newToken },
+                  });
+                  console.log("Token refreshed successfully.");
+                  return;
+                } else {
+                  logoutUser();
+                  dispatch({
+                    type: "LOGIN_ERROR",
+                    payload: "The refresh token is expired login again",
+                  });
+                  return;
+                }
+              } catch (refreshError) {
+                console.log("Failed to refresh token", refreshError);
+                // Fall through to logout
+              }
+            }
+
             dispatch({
               type: "LOGIN_ERROR",
               payload: "Expired or Invalid token",
             });
             localStorage.removeItem("token");
             localStorage.removeItem("user");
+            localStorage.removeItem("refreshToken");
             navigate("/login");
             return;
           }
+
           dispatch({
             type: "LOGIN_SUCCESS",
             payload: { user, token: existingToken },
@@ -95,15 +145,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       dispatch({ type: "LOGIN_START" });
 
-      const { user, token } = await loginUser(credentials);
+      const { user, token, refreshToken } = await loginUser(credentials);
 
       const normalizedUser = {
         id: user.id,
         username: user.username,
-        email: "", // Backend doesn't return email in login response
       };
 
       localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("user", JSON.stringify(normalizedUser));
 
       dispatch({
@@ -127,6 +177,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("refreshToken");
     dispatch({ type: "LOGOUT" });
     navigate("/login");
   }
@@ -134,8 +185,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   async function signUp(credentials: RegisterCredentials) {
     dispatch({ type: "LOGIN_START" });
     try {
-      const response = await signUpUser(credentials); // { user, token }
-      const { user, token } = response;
+      const response = await signUpUser(credentials); // { user, token, refreshToken }
+      const { user, token, refreshToken } = response;
       console.log(user);
       if (!token || typeof token !== "string") {
         throw new Error("Invalid token received from server");
@@ -143,9 +194,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const normalizedUser = {
         id: user.id,
         username: user.username,
-        email: user.email ?? credentials.email,
       };
       localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("user", JSON.stringify(normalizedUser));
       dispatch({
         type: "LOGIN_SUCCESS",

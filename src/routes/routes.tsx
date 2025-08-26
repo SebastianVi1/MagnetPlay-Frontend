@@ -66,7 +66,7 @@ export const routes: AppRoute[] = [
   {
     path: "/movie/:movieId",
     element: (
-      <Layout showNav={true} showSidebar={false}>
+      <Layout showNav={true} showSidebar={true}>
         <MovieDetails />
       </Layout>
     ),

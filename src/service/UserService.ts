@@ -5,7 +5,6 @@ import type {
   RegisterResponse,
   BackendLoginResponse,
 } from "../models/auth";
-import { redirect } from "react-router-dom";
 
 const baseUri: string = "/api";
 
@@ -146,11 +145,11 @@ export function logoutUser() {
   localStorage.clear();
 }
 
-export async function validateToken(token: string): Promise<boolean> {
+export async function validateAccesToken(token: string): Promise<boolean> {
   // Let the axios interceptor handle the Authorization header automatically
   // The token is already in localStorage, so the interceptor will add it
   await axios
-    .post<{ isValid: boolean }>("api/auth/validate", token)
+    .post<{ isValid: boolean }>("/api/auth/validate", token)
     .then((res) => {
       if (!res.data.isValid) {
         logoutUser();
@@ -173,4 +172,19 @@ export async function getFavoriteMovies(userId: number) {
       return res.data;
     })
     .catch((err) => console.log(err));
+}
+
+export async function validateRefreshToken(
+  refreshToken: string
+): Promise<BackendLoginResponse | null> {
+  try {
+    const res = await axios.post<BackendLoginResponse>(
+      baseUri + "/auth/refresh",
+      { refreshToken }
+    );
+    return res.data;
+  } catch (err) {
+    console.log("validateRefreshToken failed:", err);
+    return null;
+  }
 }

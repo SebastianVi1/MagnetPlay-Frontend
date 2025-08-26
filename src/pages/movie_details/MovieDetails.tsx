@@ -30,13 +30,9 @@ function MovieDetails() {
             <img src={movie?.poster} alt={movie?.name} />
           </div>
           <h1>{movie?.name}</h1>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa
-            accusantium aperiam reiciendis amet quidem. Iure recusandae hic
-            voluptatem ad exercitationem vel adipisci nemo architecto rem ullam
-            quis, ipsum quod aut.
-          </p>
+          <p>{movie?.description}</p>
           <p>Category: {movie?.category}</p>
+          <p>{movie?.genres}</p>
           {movie?.screenshot.map((url) => {
             return (
               <img

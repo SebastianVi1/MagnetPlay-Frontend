@@ -1,9 +1,12 @@
 export type User = {
   id: number;
   username: string;
-  email: string;
 };
-
+export type RegisterUser = {
+  id: number;
+  username: string;
+  email: string | null;
+};
 export type LoginCredentials = {
   username: string;
   password: string;
@@ -18,11 +21,13 @@ export type RegisterCredentials = {
 export type LoginResponse = {
   user: User;
   token: string;
+  refreshToken: string;
 };
 
 export type RegisterResponse = {
   user: User;
   token: string;
+  refreshToken: string;
 };
 
 export type BackendLoginResponse = {
@@ -31,6 +36,7 @@ export type BackendLoginResponse = {
     username: string;
   };
   token: string;
+  refreshToken: string;
 }; // Just the JWT token
 
 export type AuthState = {
