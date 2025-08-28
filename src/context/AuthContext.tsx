@@ -8,8 +8,6 @@ import {
   loginUser,
   logoutUser,
   signUpUser,
-  validateAccesToken,
-  validateRefreshToken,
 } from "../service/UserService";
 import {
   type AuthState,
@@ -53,89 +51,36 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
   const navigate = useNavigate();
-  // Clear any existing tokens on initialization
+  // Load user from localStorage on initialization
   useEffect(() => {
-    (async () => {
-      const existingToken = localStorage.getItem("token");
-      const existingUser = localStorage.getItem("user");
-      if (existingToken && existingUser) {
-        try {
-          const user = JSON.parse(existingUser);
-          const valid = await validateAccesToken(existingToken);
-          console.log("validating token...");
-
-          if (!valid) {
-            console.log("Token expired, trying to refresh...");
-            const existingRefreshToken = localStorage.getItem("refreshToken");
-
-            if (existingRefreshToken) {
-              try {
-                // Backend returns User, Token and RefreshToken
-                const refreshRes = await validateRefreshToken(
-                  existingRefreshToken
-                );
-
-                if (
-                  refreshRes &&
-                  typeof refreshRes === "object" &&
-                  refreshRes.token
-                ) {
-                  const newToken = refreshRes.token;
-                  const newRefreshToken = refreshRes.refreshToken;
-                  const refreshedUser = refreshRes.user ?? user;
-
-                  localStorage.setItem("token", newToken);
-                  if (newRefreshToken && typeof newRefreshToken === "string") {
-                    localStorage.setItem("refreshToken", newRefreshToken);
-                  }
-                  // if backend return a new update credentials
-                  localStorage.setItem("user", JSON.stringify(refreshedUser));
-
-                  dispatch({
-                    type: "LOGIN_SUCCESS",
-                    payload: { user: refreshedUser, token: newToken },
-                  });
-                  console.log("Token refreshed successfully.");
-                  return;
-                } else {
-                  logoutUser();
-                  dispatch({
-                    type: "LOGIN_ERROR",
-                    payload: "The refresh token is expired login again",
-                  });
-                  return;
-                }
-              } catch (refreshError) {
-                console.log("Failed to refresh token", refreshError);
-                // Fall through to logout
-              }
-            }
-
-            dispatch({
-              type: "LOGIN_ERROR",
-              payload: "Expired or Invalid token",
-            });
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            localStorage.removeItem("refreshToken");
-            navigate("/login");
-            return;
-          }
-
-          dispatch({
-            type: "LOGIN_SUCCESS",
-            payload: { user, token: existingToken },
-          });
-        } catch (err) {
-          console.log(err);
-        }
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
+    const refreshToken = localStorage.getItem("refreshToken");
+    
+    console.log("🔍 === INITIALIZATION DEBUG ===");
+    console.log("🔍 Refresh token:", refreshToken ? refreshToken.substring(0, 50) + "..." : "NULL");
+    console.log("🔍 Refresh token length:", refreshToken?.length || 0);
+    console.log("🔍 User:", userStr);
+    
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: { user, token },
+        });
+      } catch (error) {
+        console.error("Error parsing user from localStorage:", error);
+        // Clear invalid data
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("refreshToken");
       }
-      console.log("🔍 AuthProvider - Initialization complete");
-    })();
-  }, [navigate]);
+    }
+  }, []);
 
   function isAuthenticated(): boolean {
     return !!(state.user && state.token);
@@ -221,4 +166,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export { AuthContext };
+export { AuthContext, AuthProvider };
+
