@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./Favorites.module.css";
-import { getFavoriteMovies } from "../../service/UserService";
+import { getFavoriteMovies } from "../../service/MovieService";
 import { useAuth } from "../../hooks/useAuth";
 import type { MovieModel } from "../../models/movieModel";
 

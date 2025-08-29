@@ -1,10 +1,128 @@
+
 .mainWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  
 }
 
-.mainContainer {
-  width: 100%;
-  background: linear-gradient(to bottom, #fffe, #fff4);
+.mainContent {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: start;
+  padding: 10px 40px;
+  box-sizing: border-box;
 }
+
+.backgroundImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.backgroundImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(8px) brightness(0.3);
+}
+
+.movieContent {
+  display: flex;
+  gap: 60px;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 10px;
+}
+
+.moviePoster {
+  flex-shrink: 0;
+}
+
+.moviePoster img {
+  width: 300px;
+  height: 450px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  border: 3px solid rgba(79, 172, 254, 0.3);
+}
+
+.movieInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.movieTitle {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  margin: 0;
+}
+
+.movieYear {
+  font-size: 24px;
+  color: #ffffff;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.movieDuration {
+  font-size: 18px;
+  color: #cccccc;
+  margin: 0;
+  font-weight: 500;
+  }
+
+.genresContainer{
+  display: flex;
+  gap: 20px;
+}
+
+.movieSynopsis {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 25px;
+  border-radius: 15px;
+  border-left: 4px solid #4facfe;
+}
+
+.movieSynopsis p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  color: #ffffff;
+}
+
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  color: white;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(79, 172, 254, 0.3);
+  border-top: 3px solid #4facfe;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+

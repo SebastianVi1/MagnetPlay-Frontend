@@ -231,16 +231,6 @@ export async function validateAccesToken(token: string): Promise<boolean> {
   }
 }
 
-export async function getFavoriteMovies(userId: number) {
-  try {
-    const response = await axios.get(baseUri + `/user/${userId}/favorites`);
-    return response.data;
-  } catch (err) {
-    console.log("Failed to fetch favorite movies:", err);
-    throw err;
-  }
-}
-
 export async function validateRefreshToken(
   refreshToken: string
 ): Promise<BackendLoginResponse | null> {

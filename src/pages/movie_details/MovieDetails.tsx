@@ -22,32 +22,45 @@ function MovieDetails() {
     }
   }, [movieId]);
 
+  if (!movie) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p>Loading Movie...</p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div className={styles.mainWrapper}>
-        <div className={styles.mainContainer}>
-          <div className={styles.imgContainer}>
-            <img src={movie?.poster} alt={movie?.name} />
+    <div className={styles.mainWrapper}>
+
+      <div className={styles.mainContent}>
+        <div className={styles.backgroundImage}>
+          {movie.screenshot && movie.screenshot.length > 0 && (
+            <img src={movie.screenshot[0]} alt="Background" />
+          )}
+        </div>
+        <div className={styles.movieContent}>
+          <div className={styles.moviePoster}>
+            <img src={movie.poster} alt={movie.name} />
           </div>
-          <h1>{movie?.name}</h1>
-          <p>{movie?.description}</p>
-          <p>Category: {movie?.category}</p>
-          <p>{movie?.genres}</p>
-          {movie?.screenshot.map((url) => {
-            return (
-              <img
-                src={url}
-                style={{
-                  width: "100%",
-                  maxWidth: "400px",
-                  aspectRatio: "16/9",
-                }}
-              />
-            );
-          })}
+
+          <div className={styles.movieInfo}>
+            <h1 className={styles.movieTitle}>{movie.name}</h1>
+            <p className={styles.movieDuration}>1H 43M</p>
+            <div className={styles.genresContainer}>
+              {movie.genres.map((genre, idx) => (
+                <p key={idx}>{genre}</p>
+              ))}
+            </div>
+
+            <div className={styles.movieSynopsis}>
+              <p>{movie.description != null ? movie.description: "No description"}</p>
+            </div>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

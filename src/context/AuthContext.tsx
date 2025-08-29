@@ -58,12 +58,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userStr = localStorage.getItem("user");
-    const refreshToken = localStorage.getItem("refreshToken");
     
-    console.log("🔍 === INITIALIZATION DEBUG ===");
-    console.log("🔍 Refresh token:", refreshToken ? refreshToken.substring(0, 50) + "..." : "NULL");
-    console.log("🔍 Refresh token length:", refreshToken?.length || 0);
-    console.log("🔍 User:", userStr);
     
     if (token && userStr) {
       try {

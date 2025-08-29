@@ -56,3 +56,32 @@
   color: var(--text);
   font: inherit;
 }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 0 30px;
+}
+
+.logoIcon {
+  background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.logoText {
+  font-size: 24px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #4facfe, #00f2fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
