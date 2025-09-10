@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import styles from "./MovieDetails.module.css";
 import { getMovieById } from "../../service/MovieService";
-import { useAuth } from "../../hooks/useAuth";
 import { useParams } from "react-router-dom";
 import type { MovieModel } from "../../models/movieModel";
 
 function MovieDetails() {
-  const { state } = useAuth();
   const { movieId } = useParams<{ movieId: string }>();
   const [movie, setMovie] = useState<MovieModel | null>(null);
 
@@ -33,7 +31,6 @@ function MovieDetails() {
 
   return (
     <div className={styles.mainWrapper}>
-
       <div className={styles.mainContent}>
         <div className={styles.backgroundImage}>
           {movie.screenshot && movie.screenshot.length > 0 && (
@@ -55,7 +52,11 @@ function MovieDetails() {
             </div>
 
             <div className={styles.movieSynopsis}>
-              <p>{movie.description != null ? movie.description: "No description"}</p>
+              <p>
+                {movie.description != null
+                  ? movie.description
+                  : "No description"}
+              </p>
             </div>
           </div>
         </div>
