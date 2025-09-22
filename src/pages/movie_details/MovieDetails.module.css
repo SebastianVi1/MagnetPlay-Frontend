@@ -1,11 +1,9 @@
-
 .mainWrapper {
   height: 100%;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
   color: white;
   position: relative;
   overflow: hidden;
-  
 }
 
 .mainContent {
@@ -83,9 +81,9 @@
   color: #cccccc;
   margin: 0;
   font-weight: 500;
-  }
+}
 
-.genresContainer{
+.genresContainer {
   display: flex;
   gap: 20px;
 }
@@ -103,7 +101,6 @@
   margin: 0;
   color: #ffffff;
 }
-
 
 .loadingContainer {
   display: flex;
@@ -125,4 +122,65 @@
   margin-bottom: 20px;
 }
 
+.videoPlayerContainer {
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  background-color: #000;
+  position: relative;
+}
 
+.videoPlayerContainer video {
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  display: block;
+  object-fit: contain;
+  background-color: #000;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Video player responsive styles */
+@media (max-width: 1200px) {
+  .movieContent {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .moviePoster {
+    align-self: center;
+  }
+
+  .moviePoster img {
+    width: 250px;
+    height: 375px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 10px 20px;
+  }
+
+  .videoPlayerContainer video {
+    max-height: 50vh;
+  }
+
+  .movieTitle {
+    font-size: 32px;
+  }
+}
+
+/* Fullscreen mode enhancements */
+.videoPlayerContainer video:fullscreen {
+  object-fit: contain;
+  max-height: none;
+}
+
+/* Remove existing moviePlayerContainer as it's redundant */
+.moviePlayerContainer {
+  display: none;
+}

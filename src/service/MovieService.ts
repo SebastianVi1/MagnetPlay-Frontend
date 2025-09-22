@@ -1,7 +1,6 @@
 import axios from "axios";
 import type { MovieModel } from "../models/movieModel";
 
-
 export async function getMovieById(id: number): Promise<MovieModel> {
   try {
     console.log("starting get movie by id");
@@ -17,7 +16,7 @@ export async function getMovieById(id: number): Promise<MovieModel> {
 
 export async function getFavoriteMovies(userId: number) {
   try {
-    const response = await axios.get( `users/${userId}/favorites`);
+    const response = await axios.get(`users/${userId}/favorites`);
     return response.data;
   } catch (err) {
     console.log("Failed to fetch favorite movies:", err);
@@ -25,3 +24,4 @@ export async function getFavoriteMovies(userId: number) {
   }
 }
 
+export async function streamMovie() {}

@@ -7,8 +7,11 @@ import type { MovieModel } from "../../models/movieModel";
 function MovieDetails() {
   const { movieId } = useParams<{ movieId: string }>();
   const [movie, setMovie] = useState<MovieModel | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string>("");
 
   useEffect(() => {
+    setVideoUrl("http://localhost:3000/api/stream/The-Pretender.mp4");
+    // Use movieId to construct dynamic video URL
     if (movieId) {
       getMovieById(Number.parseFloat(movieId))
         .then((res: MovieModel) => {
@@ -57,6 +60,17 @@ function MovieDetails() {
                   ? movie.description
                   : "No description"}
               </p>
+            </div>
+
+            <div className={styles.videoPlayerContainer}>
+              {/* Enhanced video player with controls and responsive design */}
+              <video
+                src={videoUrl}
+                controls
+                controlsList="nodownload"
+                playsInline
+                poster={movie.screenshot?.[0]}
+              />
             </div>
           </div>
         </div>
