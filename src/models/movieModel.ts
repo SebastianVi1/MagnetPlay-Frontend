@@ -4,7 +4,7 @@ export type MovieModel = {
   description: string;
   category: string;
   poster: string;
-  magnet: string;
+  magnetUri: string;
   genres: Array<string>;
   screenshot: Array<string>;
 };

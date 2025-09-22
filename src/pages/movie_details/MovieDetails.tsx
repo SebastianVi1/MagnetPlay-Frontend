@@ -10,17 +10,19 @@ function MovieDetails() {
   const [videoUrl, setVideoUrl] = useState<string>("");
 
   useEffect(() => {
-    setVideoUrl("http://localhost:3000/api/stream/The-Pretender.mp4");
-    // Use movieId to construct dynamic video URL
     if (movieId) {
       getMovieById(Number.parseFloat(movieId))
         .then((res: MovieModel) => {
           setMovie(res);
+          setVideoUrl(`http://localhost:3000/api/stream/:${res.magnet}`);
+          // Use movieId to construct dynamic video URl
         })
         .catch((err) => {
           console.log(err);
         });
     }
+
+
   }, [movieId]);
 
   if (!movie) {
