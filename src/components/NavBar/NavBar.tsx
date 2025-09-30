@@ -14,7 +14,9 @@ function NavBar() {
       <nav className={styles.flexContainer}>
         <div className={styles.logo}>
           <span className={styles.logoIcon}>M</span>
-          <span className={styles.logoText}>MagnetPlay</span>
+          <Link to="/">
+            <span className={styles.logoText}>MagnetPlay</span>
+          </Link>
         </div>
         <div className={styles.navButtonsContainer}>
           <ul className={styles.ul}>

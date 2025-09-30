@@ -184,3 +184,13 @@
 .moviePlayerContainer {
   display: none;
 }
+.subtitlesLoading {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}

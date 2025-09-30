@@ -14,15 +14,17 @@ function MovieDetails() {
       getMovieById(Number.parseFloat(movieId))
         .then((res: MovieModel) => {
           setMovie(res);
-          setVideoUrl(`http://localhost:3000/api/stream/:${res.magnet}`);
+          setVideoUrl(
+            `http://localhost:3000/api/torrent/${encodeURIComponent(
+              res.magnetUri
+            )}`
+          );
           // Use movieId to construct dynamic video URl
         })
         .catch((err) => {
           console.log(err);
         });
     }
-
-
   }, [movieId]);
 
   if (!movie) {
@@ -71,8 +73,21 @@ function MovieDetails() {
                 controls
                 controlsList="nodownload"
                 playsInline
-                poster={movie.screenshot?.[0]}
-              />
+                poster={movie.screenshot?.[1]}
+              >
+                <track
+                  label="English"
+                  kind="subtitles"
+                  srcLang="en"
+                  src="http://localhost:3000/api/subtitles/movie.en.vtt"
+                />
+                <track
+                  label="Spanish"
+                  kind="subtitles"
+                  srcLang="es"
+                  src="http://localhost:3000/api/subtitles/movie.es.vtt"
+                />
+              </video>
             </div>
           </div>
         </div>
