@@ -25,6 +25,11 @@ function Home() {
   // Loading flag while fetching data
   const [loading, setLoading] = useState(true);
 
+  const categoriesList: Array<string> = ["Recent", "Trending", "All"];
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    categoriesList[0]
+  );
+
   useEffect(() => {
     // Fetch movies organized by categories from backend
     axios
@@ -46,12 +51,28 @@ function Home() {
       {/* Show a loading indicator while data is being fetched */}
       {loading && <p style={{ fontSize: 14, opacity: 0.7 }}>Loading…</p>}
 
+      {/* Category navigation bar */}
+      <nav className={styles.categoryContainer}>
+        <ul className={styles.categoryNav}>
+          {categoriesList.map((e: string) => (
+            <li
+              key={e}
+              className={`${styles.categoryList} ${
+                selectedCategory === e ? styles.selected : ""
+              }`}
+              onClick={() => setSelectedCategory(e)}
+            >
+              {e}
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       {/* Once loaded, iterate over each category and render its movies */}
       {!loading &&
         Object.entries(moviesByCategory).map(([category, movies]) => (
           <section key={category}>
             {/* Category header */}
-            <h2>{category}</h2>
             <div className={styles.movieContainer}>
               <ul>
                 {/* Render each movie in this category as a MovieCard */}

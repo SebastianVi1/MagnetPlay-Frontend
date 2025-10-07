@@ -1,6 +1,8 @@
 .mainContainer {
   margin: 30px auto;
   padding: 0 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .mainContainer h2 {
@@ -44,10 +46,63 @@
 }
 
 .movieContainer {
-  verflow-x: hidden;
+  overflow-x: hidden;
 
   /* Scrollbar theme tokens (scoped to this row) */
   --scrollbar-thumb: rgba(255, 255, 255, 0.28);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.38);
   --scrollbar-track: transparent;
+}
+
+/* Category Navigation Bar */
+.categoryContainer {
+  align-self: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  width: 100%;
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 32px;
+  max-width: 500px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.categoryNav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.categoryList {
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  padding: 10px 24px;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  user-select: none;
+  cursor: pointer;
+}
+
+.categoryList:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  font-weight: 600;
+}
+
+.selected:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
 }
