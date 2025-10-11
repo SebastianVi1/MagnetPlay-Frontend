@@ -34,16 +34,24 @@ function Home() {
 
   // Preload all categories on mount
   useEffect(() => {
+    let isMounted = true;
+
     const preloadAllCategories = async () => {
+      if (!isMounted) return;
+      
       console.log("🚀 Starting to preload all categories...");
 
       // Load all categories in parallel
       const loadPromises = categoriesList.map(async (category) => {
         try {
+          if (!isMounted) return { category, movies: [] };
+          
           console.log(`📥 Loading ${category}...`);
           const movies = await loadMoviesByCategory(category);
+          
+          if (!isMounted) return { category, movies: [] };
+          
           console.log(`✅ ${category} loaded: ${movies.length} movies`);
-
           return { category, movies };
         } catch (error) {
           console.error(`❌ Failed to load ${category}:`, error);
@@ -52,6 +60,9 @@ function Home() {
       });
 
       const results = await Promise.all(loadPromises);
+
+      // Only update state if component is still mounted
+      if (!isMounted) return;
 
       // Update state with all loaded movies
       const newCategoryMovies: CategoryMovies = {
@@ -75,6 +86,11 @@ function Home() {
     };
 
     preloadAllCategories();
+
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted = false;
+    };
   }, []); // Only run once on mount
 
   // Get current category movies
