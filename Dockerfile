@@ -1,9 +1,21 @@
-FROM node:22.19.0-alpine3.22
-RUN addgroup react && adduser -S -G react react
-USER react
+FROM node:20-alpine
+
 WORKDIR /app
-COPY --chown=react package*.json .
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
-COPY --chown=react . .
+
+# Copy source code
+COPY . .
+
+# Environment variable for Docker
+ENV VITE_API_URL=http://backend:8080
+
+# Expose port
 EXPOSE 5173
-CMD [ "npm", "run", "dev" ]
+
+# Start development server with host option
+CMD ["npm", "run", "dev", "--", "--host"]

@@ -1,98 +1,150 @@
 import { useEffect, useState } from "react";
 import styles from "./Home.module.css";
-import axios from "axios";
 import Movie from "../../components/movieCard/MovieCard";
 import { Link } from "react-router-dom";
+import { loadMoviesByCategory } from "../../service/MovieService";
+import type { MovieModel } from "../../models/movieModel";
 
-// Define the shape of a Movie object returned by the API
-interface Movie {
-  id: number;
-  name: string;
-  description: string;
-  date: string;
-  screenshot: Array<string>;
-  category: string;
-  posterUri: string;
-  magnetUri: string;
-  hash: string;
+interface CategoryMovies {
+  Recent: MovieModel[];
+  Trending: MovieModel[];
+  All: MovieModel[];
 }
 
 function Home() {
-  // State to hold movies grouped by category (keyed by category name)
-  const [moviesByCategory, setMoviesByCategory] = useState<
-    Record<string, Movie[]>
-  >({});
-  // Loading flag while fetching data
-  const [loading, setLoading] = useState(true);
-
   const categoriesList: Array<string> = ["Recent", "Trending", "All"];
   const [selectedCategory, setSelectedCategory] = useState<string>(
     categoriesList[0]
   );
 
+  // Store all categories in a single state object
+  const [categoryMovies, setCategoryMovies] = useState<CategoryMovies>({
+    Recent: [],
+    Trending: [],
+    All: [],
+  });
+
+  const [isLoading, setIsLoading] = useState<Record<string, boolean>>({
+    Recent: true,
+    Trending: true,
+    All: true,
+  });
+
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
+  // Preload all categories on mount
   useEffect(() => {
-    // Fetch movies organized by categories from backend
-    axios
-      .get("/api/movies/categories")
-      .then((res) => {
-        setMoviesByCategory(res.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching movies by category:", error);
-      })
-      .finally(() => {
-        // Clear loading state whether request succeeded or failed
-        setLoading(false);
+    const preloadAllCategories = async () => {
+      console.log("🚀 Starting to preload all categories...");
+
+      // Load all categories in parallel
+      const loadPromises = categoriesList.map(async (category) => {
+        try {
+          console.log(`📥 Loading ${category}...`);
+          const movies = await loadMoviesByCategory(category);
+          console.log(`✅ ${category} loaded: ${movies.length} movies`);
+
+          return { category, movies };
+        } catch (error) {
+          console.error(`❌ Failed to load ${category}:`, error);
+          return { category, movies: [] };
+        }
       });
-  }, []);
+
+      const results = await Promise.all(loadPromises);
+
+      // Update state with all loaded movies
+      const newCategoryMovies: CategoryMovies = {
+        Recent: [],
+        Trending: [],
+        All: [],
+      };
+
+      const newLoadingState: Record<string, boolean> = {};
+
+      results.forEach(({ category, movies }) => {
+        newCategoryMovies[category as keyof CategoryMovies] = movies;
+        newLoadingState[category] = false;
+      });
+
+      setCategoryMovies(newCategoryMovies);
+      setIsLoading(newLoadingState);
+      setInitialLoadComplete(true);
+
+      console.log("✅ All categories preloaded successfully");
+    };
+
+    preloadAllCategories();
+  }, []); // Only run once on mount
+
+  // Get current category movies
+  const currentMovies =
+    categoryMovies[selectedCategory as keyof CategoryMovies] || [];
+  const isCurrentCategoryLoading = isLoading[selectedCategory];
 
   return (
     <div className={styles.mainContainer}>
-      {/* Show a loading indicator while data is being fetched */}
-      {loading && <p style={{ fontSize: 14, opacity: 0.7 }}>Loading…</p>}
-
       {/* Category navigation bar */}
       <nav className={styles.categoryContainer}>
         <ul className={styles.categoryNav}>
-          {categoriesList.map((e: string) => (
+          {categoriesList.map((category: string) => (
             <li
-              key={e}
+              key={category}
               className={`${styles.categoryList} ${
-                selectedCategory === e ? styles.selected : ""
+                selectedCategory === category ? styles.selected : ""
               }`}
-              onClick={() => setSelectedCategory(e)}
+              onClick={() => setSelectedCategory(category)}
             >
-              {e}
+              {category}
             </li>
           ))}
         </ul>
       </nav>
 
-      {/* Once loaded, iterate over each category and render its movies */}
-      {!loading &&
-        Object.entries(moviesByCategory).map(([category, movies]) => (
-          <section key={category}>
-            {/* Category header */}
-            <div className={styles.movieContainer}>
-              <ul>
-                {/* Render each movie in this category as a MovieCard */}
+      {/* Show loading indicator */}
+      {!initialLoadComplete && (
+        <div className={styles.loadingIndicator}>
+          <p>Loading all categories...</p>
+        </div>
+      )}
 
-                {movies.map((m) => (
-                  <Link to={`movie/${m.id}`}>
-                    <Movie
-                      key={m.id}
-                      id={m.id}
-                      title={m.name}
-                      description={m.description}
-                      posterUrl={m.posterUri}
-                    />
-                  </Link>
-                ))}
-              </ul>
-            </div>
-          </section>
-        ))}
+      {/* Show category specific loading */}
+      {initialLoadComplete && isCurrentCategoryLoading && (
+        <div className={styles.loadingIndicator}>
+          <p>Loading {selectedCategory} movies...</p>
+        </div>
+      )}
+
+      {/* Render movies */}
+      {initialLoadComplete &&
+        !isCurrentCategoryLoading &&
+        currentMovies.length > 0 && (
+          <div className={styles.movieContainer}>
+            <ul>
+              {currentMovies.map((m: MovieModel) => (
+                <Link to={`movie/${m.id}`} key={m.id}>
+                  <Movie
+                    id={m.id}
+                    title={m.name}
+                    description={m.description}
+                    posterUri={m.posterUri}
+                  />
+                </Link>
+              ))}
+            </ul>
+          </div>
+        )}
+
+      {/* Show message when no movies found */}
+      {initialLoadComplete &&
+        !isCurrentCategoryLoading &&
+        currentMovies.length === 0 && (
+          <div className={styles.noMovies}>
+            <p>No movies found in {selectedCategory} category.</p>
+          </div>
+        )}
     </div>
   );
 }
+
 export default Home;

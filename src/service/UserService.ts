@@ -5,7 +5,6 @@ import type {
   RegisterResponse,
   BackendLoginResponse,
 } from "../models/auth";
-import { useNavigate } from "react-router-dom";
 const baseUri: string = "/api";
 
 // Create a separate axios instance for validation calls to avoid interceptor loops
@@ -49,14 +48,14 @@ axios.interceptors.response.use(
       if (error.config?.url?.includes("/auth/validate")) {
         return Promise.reject(error);
       }
-      
+
       // Check if this is a refresh request to avoid infinite loops
       if (error.config?.url?.includes("/auth/refresh")) {
         logoutUser();
         window.location.href = "/login";
         return Promise.reject(error);
       }
-      
+
       // Only handle API requests (not frontend routes)
       if (error.config?.url?.startsWith("/api")) {
         // Handle token refresh asynchronously
@@ -71,7 +70,7 @@ axios.interceptors.response.use(
 async function handleTokenRefresh(error: any) {
   const existingRefreshToken = localStorage.getItem("refreshToken");
   const existingAccesToken = localStorage.getItem("token");
-  
+
   if (!existingRefreshToken) {
     console.log("❌ No refresh token found, logging out");
     logoutUser();
@@ -98,17 +97,17 @@ async function handleTokenRefresh(error: any) {
   // Try to refresh the token
   try {
     console.log("🔄 Attempting to refresh token...");
-    
+
     const refreshResponse = await validateRefreshToken(existingRefreshToken);
     console.log("🔄 Refresh response:", refreshResponse);
-    
+
     if (refreshResponse && refreshResponse.token) {
       // Store new tokens
       localStorage.setItem("token", refreshResponse.token);
       if (refreshResponse.refreshToken) {
         localStorage.setItem("refreshToken", refreshResponse.refreshToken);
       }
-      
+
       // Retry the original request with new token
       error.config.headers.Authorization = `Bearer ${refreshResponse.token}`;
       return axios.request(error.config);
@@ -119,6 +118,7 @@ async function handleTokenRefresh(error: any) {
       return Promise.reject(error);
     }
   } catch (refreshError) {
+    console.log(refreshError);
     // Refresh token is invalid, logout user
     logoutUser();
     window.location.href = "/login";
@@ -223,7 +223,10 @@ export function logoutUser() {
 
 export async function validateAccesToken(token: string): Promise<boolean> {
   try {
-    const response = await validationAxios.post<{ isValid: boolean }>("/auth/validate", token);
+    const response = await validationAxios.post<{ isValid: boolean }>(
+      "/auth/validate",
+      token
+    );
     return response.data.isValid;
   } catch (err) {
     console.log("Problem occurred: " + err);
@@ -237,9 +240,9 @@ export async function validateRefreshToken(
   try {
     const res = await axios.post<BackendLoginResponse>(
       baseUri + "/auth/refresh",
-      refreshToken 
+      refreshToken
     );
-    
+
     console.log("✅ Refresh token response received:", res.data);
     return res.data;
   } catch (err) {
@@ -247,4 +250,3 @@ export async function validateRefreshToken(
     return null;
   }
 }
-

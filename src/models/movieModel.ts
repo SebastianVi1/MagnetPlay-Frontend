@@ -3,7 +3,7 @@ export type MovieModel = {
   name: string;
   description: string;
   category: string;
-  poster: string;
+  posterUri: string;
   magnetUri: string;
   genres: Array<string>;
   screenshot: Array<string>;

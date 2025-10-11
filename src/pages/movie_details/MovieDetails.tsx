@@ -14,12 +14,12 @@ function MovieDetails() {
       getMovieById(Number.parseFloat(movieId))
         .then((res: MovieModel) => {
           setMovie(res);
+          // Use relative URL to leverage proxy configuration
           setVideoUrl(
             `http://localhost:3000/api/torrent/${encodeURIComponent(
               res.magnetUri
             )}`
           );
-          // Use movieId to construct dynamic video URl
         })
         .catch((err) => {
           console.log(err);
@@ -46,7 +46,7 @@ function MovieDetails() {
         </div>
         <div className={styles.movieContent}>
           <div className={styles.moviePoster}>
-            <img src={movie.poster} alt={movie.name} />
+            <img src={movie.posterUri} alt={movie.name} />
           </div>
 
           <div className={styles.movieInfo}>
@@ -67,7 +67,6 @@ function MovieDetails() {
             </div>
 
             <div className={styles.videoPlayerContainer}>
-              {/* Enhanced video player with controls and responsive design */}
               <video
                 src={videoUrl}
                 controls
@@ -75,17 +74,18 @@ function MovieDetails() {
                 playsInline
                 poster={movie.screenshot?.[1]}
               >
+                {/* Use relative URLs for subtitles too */}
                 <track
                   label="English"
                   kind="subtitles"
                   srcLang="en"
-                  src="http://localhost:3000/api/subtitles/movie.en.vtt"
+                  src="/api/subtitles/movie.en.vtt"
                 />
                 <track
                   label="Spanish"
                   kind="subtitles"
                   srcLang="es"
-                  src="http://localhost:3000/api/subtitles/movie.es.vtt"
+                  src="/api/subtitles/movie.es.vtt"
                 />
               </video>
             </div>
