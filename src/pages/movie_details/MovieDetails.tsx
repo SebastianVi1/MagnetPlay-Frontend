@@ -14,9 +14,9 @@ function MovieDetails() {
       getMovieById(Number.parseFloat(movieId))
         .then((res: MovieModel) => {
           setMovie(res);
-          // Use relative URL to leverage proxy configuration
           setVideoUrl(
-            `http://localhost:3000/api/torrent/${encodeURIComponent(
+            `
+            http://localhost:3000/api/torrent/${encodeURIComponent(
               res.magnetUri
             )}`
           );
