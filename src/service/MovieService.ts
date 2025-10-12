@@ -1,123 +1,75 @@
 import axios from "axios";
 import type { MovieModel } from "../models/movieModel";
+import { movieCache } from "../utils/cache";
 
-// Simple in-memory cache for movies to avoid repeated API calls
-const movieCache: Record<string, MovieModel[]> = {};
-
-/**
- * Fetches a single movie by its ID
- * @param id - The movie ID
- * @returns Promise<MovieModel> - The movie data
- */
 export async function getMovieById(id: number): Promise<MovieModel> {
   try {
-    const response = await axios.get<MovieModel>(`/api/movies/${id}`);
-    
-    if (response.status !== 200) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching movie ${id}:`, error);
-    throw error;
+    console.log("starting get movie by id");
+    const res = await axios.get<MovieModel>(`/api/movies/${id}`);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  } finally {
+    console.log("Done");
   }
 }
 
-/**
- * Fetches favorite movies for a specific user
- * @param userId - The user ID
- * @returns Promise<any> - The favorite movies data
- */
 export async function getFavoriteMovies(userId: number) {
   try {
-    const response = await axios.get(`/api/users/${userId}/favorites`);
-    
-    if (response.status !== 200) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
+    const response = await axios.get(`users/${userId}/favorites`);
     return response.data;
-  } catch (error) {
-    console.error(`Failed to fetch favorite movies for user ${userId}:`, error);
-    throw error;
+  } catch (err) {
+    console.log("Failed to fetch favorite movies:", err);
+    throw err;
   }
 }
 
-/**
- * Loads movies by category with caching and error handling
- * @param category - The movie category (recent, trending, all)
- * @returns Promise<MovieModel[]> - Array of movies for the category
- */
-export async function loadMoviesByCategory(
-  category: string
-): Promise<MovieModel[]> {
-  try {
-    const cacheKey = category.toLowerCase();
+export const loadMoviesByCategory = async (category: string) => {
+  const cacheKey = `movies_${category}`;
 
-    // Check cache first to avoid unnecessary API calls
-    if (movieCache[cacheKey]) {
-      return movieCache[cacheKey];
-    }
-
-    // Map categories to their respective API endpoints
-    let endpoint = "/api/movies";
-    switch (cacheKey) {
-      case "recent":
-        endpoint = "/api/movies/recent";
-        break;
-      case "trending":
-        endpoint = "/api/movies/trending";
-        break;
-      case "all":
-        endpoint = "/api/movies";
-        break;
-    }
-
-    const response = await axios.get<MovieModel[]>(endpoint);
-
-    // Validate response
-    if (response.status !== 200) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    if (!Array.isArray(response.data)) {
-      throw new Error("Invalid response format: expected array of movies");
-    }
-
-    // Save to cache for future requests
-    movieCache[cacheKey] = response.data;
-
-    return response.data;
-  } catch (error) {
-    console.error(`Error loading ${category} movies:`, error);
-    
-    // Return empty array to prevent UI crashes
-    return [];
+  // Check cache first
+  const cachedData = movieCache.get(cacheKey);
+  if (cachedData) {
+    console.log(`📦 Using cached data for ${category}`);
+    return cachedData;
   }
-}
 
-/**
- * Preloads all specified categories in parallel for better performance
- * @param categories - Array of category names to preload
- * @returns Promise<void>
- */
+  console.log(`🌐 Fetching ${category} from API...`);
+
+  let endpoint = "/api/movies";
+
+  // Map categories to endpoints
+  switch (category.toLowerCase()) {
+    case "recent":
+      endpoint = "/api/movies/recent";
+      break;
+    case "trending":
+      endpoint = "/api/movies/trending";
+      break;
+    case "all":
+      endpoint = "/api/movies";
+      break;
+  }
+
+  const response = await axios.get<MovieModel[]>(endpoint);
+
+  // Save to cache
+  movieCache.set(cacheKey, response.data, 30); // 30 minutes
+
+  return response.data;
+};
+
+// New function to preload all categories
 export async function preloadAllCategories(
   categories: string[]
 ): Promise<void> {
   const promises = categories.map((category) =>
-    loadMoviesByCategory(category).catch((error) => {
-      console.error(`Failed to preload ${category}:`, error);
+    loadMoviesByCategory(category).catch((err) => {
+      console.error(`Failed to preload ${category}:`, err);
       return [];
     })
   );
 
   await Promise.all(promises);
-}
-
-/**
- * Clears the movie cache - useful for testing or forcing fresh data
- */
-export function clearMovieCache(): void {
-  Object.keys(movieCache).forEach(key => delete movieCache[key]);
 }
