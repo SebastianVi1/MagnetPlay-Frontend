@@ -1,12 +1,18 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styles from "./SideBar.module.css";
 
 function SideBar() {
-  const [activeItem, setActiveItem] = useState("home");
+  const location = useLocation();
 
-  const toggleActive = (itemName: string) => {
-    setActiveItem(itemName);
+  const menuItems = [
+    { path: "/", label: "Home", key: "home" },
+    { path: "/favorites", label: "Favorites", key: "favorites" },
+    { path: "/search", label: "Search", key: "search" },
+  ];
+
+  const isActive = (path: string) => {
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
   };
 
   return (
@@ -14,26 +20,18 @@ function SideBar() {
       <div className={styles.sideBarContainer}>
         <nav className={styles.nav}>
           <ul>
-            <li
-              className={`${styles.listItem} ${
-                activeItem === "home" ? styles.active : ""
-              }`}
-              onClick={() => toggleActive("home")}
-            >
-              <Link to="/" className={styles.link}>
-                Home
-              </Link>
-            </li>
-            <li
-              className={`${styles.listItem} ${
-                activeItem === "favorites" ? styles.active : ""
-              }`}
-              onClick={() => toggleActive("watchlist")}
-            >
-              <Link to="/favorites" className={styles.link}>
-                Favorites
-              </Link>
-            </li>
+            {menuItems.map(({ path, label, key }) => (
+              <li
+                key={key}
+                className={`${styles.listItem} ${
+                  isActive(path) ? styles.active : ""
+                }`}
+              >
+                <Link to={path} className={styles.link}>
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>

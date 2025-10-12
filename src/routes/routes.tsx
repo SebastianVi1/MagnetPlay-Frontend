@@ -6,7 +6,8 @@ import Login from "../pages/login/Login";
 import type { ReactNode } from "react";
 import Register from "../pages/register/Register";
 import Favorites from "../pages/favorites/Favorites";
-import MovieDetails from "../pages/movie_details/MovieDetails";
+import MovieDetails from "../components/movie_details/MovieDetails";
+import { Search } from "../components/Search/Search";
 
 export interface AppRoute {
   path: string;
@@ -53,6 +54,15 @@ export const routes: AppRoute[] = [
       </Layout>
     ),
     title: "Favorites",
+  },
+  {
+    path: "/search",
+    element: (
+      <Layout showNav={true} showSidebar={true}>
+        <Search />
+      </Layout>
+    ),
+    title: "Search",
   },
   {
     path: "/about",
