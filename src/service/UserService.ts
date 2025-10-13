@@ -67,7 +67,7 @@ axios.interceptors.response.use(
 );
 
 // Helper function to handle token refresh
-async function handleTokenRefresh(error: any) {
+async function handleTokenRefresh(error) {
   const existingRefreshToken = localStorage.getItem("refreshToken");
   const existingAccesToken = localStorage.getItem("token");
 
@@ -99,7 +99,6 @@ async function handleTokenRefresh(error: any) {
     console.log("🔄 Attempting to refresh token...");
 
     const refreshResponse = await validateRefreshToken(existingRefreshToken);
-    console.log("🔄 Refresh response:", refreshResponse);
 
     if (refreshResponse && refreshResponse.token) {
       // Store new tokens
@@ -243,7 +242,6 @@ export async function validateRefreshToken(
       refreshToken
     );
 
-    console.log("✅ Refresh token response received:", res.data);
     return res.data;
   } catch (err) {
     console.log("validateRefreshToken failed:", err);

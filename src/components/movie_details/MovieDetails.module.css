@@ -194,3 +194,120 @@
   border-radius: 4px;
   font-size: 12px;
 }
+
+/* Title container with favorite button */
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.movieTitle {
+  margin: 0;
+  flex: 1;
+}
+
+/* Favorite Button - Simplified */
+.favoriteButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.4rem;
+}
+
+.favoriteButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+}
+
+.favoriteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Favorited state - Simple red */
+.favorited {
+  background: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.favorited:hover:not(:disabled) {
+  background: #c82333;
+  border-color: #c82333;
+}
+
+/* Simple heart icon */
+.heartIcon {
+  display: inline-block;
+}
+
+/* Simple loading icon */
+.loadingIcon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .titleContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .favoriteButton {
+    align-self: flex-end;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .favoriteButton,
+  .heartIcon {
+    transition: none;
+    animation: none;
+  }
+
+  .favoriteButton:hover {
+    transform: none;
+  }
+}
+.favoriteButton {
+  align-self: flex-end;
+  width: 45px;
+  height: 45px;
+  font-size: 1.3rem;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .favoriteButton,
+  .heartIcon {
+    transition: none;
+    animation: none;
+  }
+
+  .favoriteButton:hover {
+    transform: none;
+  }
+}

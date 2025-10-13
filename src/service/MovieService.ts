@@ -4,21 +4,22 @@ import { movieCache } from "../utils/cache";
 
 export async function getMovieById(id: number): Promise<MovieModel> {
   try {
-    console.log("starting get movie by id");
     const res = await axios.get<MovieModel>(`/api/movies/${id}`);
     return res.data;
   } catch (err) {
     console.log(err);
     throw err;
   } finally {
-    console.log("Done");
+    console.log("Fetched movie with id: " + id);
   }
 }
 
 export async function getFavoriteMovies(userId: number) {
   try {
-    const response = await axios.get(`users/${userId}/favorites`);
-    return response.data;
+    // Temporary: use full URL for debugging
+    const response = await axios.get(`api/users/${userId}/favorites`);
+    console.log("Response:", response);
+    return Array.isArray(response.data) ? response.data : [];
   } catch (err) {
     console.log("Failed to fetch favorite movies:", err);
     throw err;
@@ -72,4 +73,43 @@ export async function preloadAllCategories(
   );
 
   await Promise.all(promises);
+}
+
+export async function addToFavorites(userId: number, movieId: number) {
+  try {
+    const response = await axios.post(
+      `/api/users/${userId}/favorites/${movieId}`
+    );
+    return response.data;
+  } catch (err) {
+    console.error("Failed to add movie to favorites:", err);
+    throw err;
+  }
+}
+
+export async function removeFromFavorites(userId: number, movieId: number) {
+  try {
+    const response = await axios.delete(
+      `/api/users/${userId}/favorites/${movieId}`
+    );
+    return response.data;
+  } catch (err) {
+    console.error("Failed to remove movie from favorites:", err);
+    throw err;
+  }
+}
+
+export async function checkIfFavorite(
+  userId: number,
+  movieId: number
+): Promise<boolean> {
+  try {
+    const response = await axios.get(
+      `/api/users/${userId}/favorites/${movieId}/check`
+    );
+    return response.data;
+  } catch (err) {
+    console.error("Failed to check favorite status:", err);
+    return false;
+  }
 }
