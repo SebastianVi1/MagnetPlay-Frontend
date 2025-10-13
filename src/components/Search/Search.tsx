@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import styles from "./Search.module.css";
 import Movie from "../movieCard/MovieCard";
 import type { MovieModel } from "../../models/movieModel";
@@ -12,16 +13,22 @@ export function Search() {
   const [hasSearched, setHasSearched] = useState(false);
 
   // Debounce search term to avoid too many API calls
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const debouncedSearchTerm = useDebounce(searchTerm, 700);
 
-  // Mock search function - replace with your actual API call
+  // Search function using axios
   const searchMovies = async (query: string): Promise<MovieModel[]> => {
-    // TODO: Replace endpoint
-    const response = await fetch(
-      `/api/movies/search?q=${encodeURIComponent(query)}`
-    );
-    if (!response.ok) throw new Error("Search failed");
-    return response.json();
+    try {
+      const response = await axios.get<MovieModel[]>(`/api/movies/search`, {
+        params: { name: query },
+        timeout: 10000, // 10 second timeout
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(`Search failed: ${error.message}`);
+      }
+      throw new Error("Search failed");
+    }
   };
 
   // Effect to search when debounced term changes
