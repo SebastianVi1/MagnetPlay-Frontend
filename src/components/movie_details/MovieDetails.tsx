@@ -136,7 +136,7 @@ function MovieDetails() {
                 controls
                 controlsList="nodownload"
                 playsInline
-                poster={movie.screenshot?.[1]}
+                poster={movie.screenshot[0]}
               >
                 {/* Use relative URLs for subtitles too */}
                 <track
