@@ -1,0 +1,32 @@
+FROM node:18-alpine AS builder
+WORKDIR /app
+
+# Accept VITE build args so we can set env for the build
+ARG VITE_API_URL
+ARG VITE_STREAMING_URL
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --silent
+
+# Copy source and set build-time env vars for Vite
+COPY . .
+ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_STREAMING_URL=${VITE_STREAMING_URL}
+
+RUN npm run build
+
+# Final image: lightweight Node that serves static files with 'serve'
+FROM node:18-alpine
+WORKDIR /app
+
+# Put container in production mode
+ENV NODE_ENV=production
+# Install 'serve' to serve the built assets
+RUN npm i -g serve --silent
+
+# Copy built assets from builder
+COPY --from=builder /app/dist /app/dist
+
+EXPOSE 80
+CMD ["serve", "-s", "/app/dist", "-l", "80"]

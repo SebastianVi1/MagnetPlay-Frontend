@@ -2,9 +2,19 @@ import axios from "axios";
 import type { MovieModel } from "../models/movieModel";
 import { movieCache } from "../utils/cache";
 
+const apiBase = import.meta.env.DEV ? "" : import.meta.env.VITE_API_URL ?? "";
+
+function apiPath(path: string) {
+  // path expected to start with /api
+  if (import.meta.env.DEV) return path;
+  return apiBase.endsWith("/")
+    ? `${apiBase.replace(/\/$/, "")}${path}`
+    : `${apiBase}${path}`;
+}
+
 export async function getMovieById(id: number): Promise<MovieModel> {
   try {
-    const res = await axios.get<MovieModel>(`/api/movies/${id}`);
+    const res = await axios.get<MovieModel>(apiPath(`/api/movies/${id}`));
     return res.data;
   } catch (err) {
     console.log(err);
@@ -16,8 +26,7 @@ export async function getMovieById(id: number): Promise<MovieModel> {
 
 export async function getFavoriteMovies(userId: number) {
   try {
-    // Temporary: use full URL for debugging
-    const response = await axios.get(`api/users/${userId}/favorites`);
+    const response = await axios.get(apiPath(`/api/users/${userId}/favorites`));
     console.log("Response:", response);
     return Array.isArray(response.data) ? response.data : [];
   } catch (err) {
@@ -53,7 +62,7 @@ export const loadMoviesByCategory = async (category: string) => {
       break;
   }
 
-  const response = await axios.get<MovieModel[]>(endpoint);
+  const response = await axios.get<MovieModel[]>(apiPath(endpoint));
 
   // Save to cache
   movieCache.set(cacheKey, response.data, 30); // 30 minutes
@@ -78,7 +87,7 @@ export async function preloadAllCategories(
 export async function addToFavorites(userId: number, movieId: number) {
   try {
     const response = await axios.post(
-      `/api/users/${userId}/favorites/${movieId}`
+      apiPath(`/api/users/${userId}/favorites/${movieId}`)
     );
     return response.data;
   } catch (err) {
@@ -90,7 +99,7 @@ export async function addToFavorites(userId: number, movieId: number) {
 export async function removeFromFavorites(userId: number, movieId: number) {
   try {
     const response = await axios.delete(
-      `/api/users/${userId}/favorites/${movieId}`
+      apiPath(`/api/users/${userId}/favorites/${movieId}`)
     );
     return response.data;
   } catch (err) {
@@ -105,7 +114,7 @@ export async function checkIfFavorite(
 ): Promise<boolean> {
   try {
     const response = await axios.get(
-      `/api/users/${userId}/favorites/${movieId}/check`
+      apiPath(`/api/users/${userId}/favorites/${movieId}/check`)
     );
     return response.data;
   } catch (err) {

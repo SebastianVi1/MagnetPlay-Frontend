@@ -5,11 +5,22 @@ import type {
   RegisterResponse,
   BackendLoginResponse,
 } from "../models/auth";
-const baseUri: string = "/api";
+
+// Build-time API base (Vite): in dev we use relative paths and the Vite proxy.
+const apiBase = import.meta.env.DEV ? "" : import.meta.env.VITE_API_URL ?? "";
+
+function apiPath(path: string) {
+  // path is expected to start with /api
+  if (import.meta.env.DEV) return path;
+  // ensure no double-slash when apiBase ends with '/'
+  return apiBase.endsWith("/")
+    ? `${apiBase.replace(/\/$/, "")}${path}`
+    : `${apiBase}${path}`;
+}
 
 // Create a separate axios instance for validation calls to avoid interceptor loops
 const validationAxios = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.DEV ? "/api" : apiBase || "/api",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -24,26 +35,24 @@ axios.defaults.withCredentials = false; // Disable credentials for cross-origin 
 
 //interceptor to include jwt token in future requests
 axios.interceptors.request.use(
-  (config) => {
+  (config: any) => {
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error: any) => Promise.reject(error)
 );
 
 //Handle errors of the expired token.
 axios.interceptors.response.use(
-  (response) => {
+  (response: any) => {
     return response;
   },
-  (error) => {
+  (error: any) => {
     // Only handle 401 errors (unauthorized) - not validation errors
     if (error.response?.status === 401 || error.response?.status === 403) {
-      //TODO: ADD REFRESH TOKEN
-
       // Check if this is a validation request to avoid clearing session unnecessarily
       if (error.config?.url?.includes("/auth/validate")) {
         return Promise.reject(error);
@@ -56,8 +65,8 @@ axios.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      // Only handle API requests (not frontend routes)
-      if (error.config?.url?.startsWith("/api")) {
+      // Only handle API requests (not frontend routes). Use includes to match absolute URLs too.
+      if (error.config?.url?.includes("/api")) {
         // Handle token refresh asynchronously
         return handleTokenRefresh(error);
       }
@@ -67,7 +76,7 @@ axios.interceptors.response.use(
 );
 
 // Helper function to handle token refresh
-async function handleTokenRefresh(error) {
+async function handleTokenRefresh(error: any) {
   const existingRefreshToken = localStorage.getItem("refreshToken");
   const existingAccesToken = localStorage.getItem("token");
 
@@ -116,7 +125,7 @@ async function handleTokenRefresh(error) {
       window.location.href = "/login";
       return Promise.reject(error);
     }
-  } catch (refreshError) {
+  } catch (refreshError: any) {
     console.log(refreshError);
     // Refresh token is invalid, logout user
     logoutUser();
@@ -130,15 +139,16 @@ export async function loginUser(
 ): Promise<BackendLoginResponse> {
   try {
     const { data } = await axios.post<BackendLoginResponse>(
-      baseUri + "/auth/login",
+      apiPath("/api/auth/login"),
       credentials
     );
-    const { token } = data;
+    const { token } = data as any;
     if (!token || typeof token !== "string") {
+      console.error("Invalid token received from server - payload:", data);
       throw new Error("Invalid token received from server");
     }
     return data; // { user, token }
-  } catch (err: unknown) {
+  } catch (err: any) {
     if (axios.isAxiosError(err)) {
       const status = err.response?.status;
       const data: unknown = err.response?.data;
@@ -175,11 +185,11 @@ export async function signUpUser(
 ): Promise<RegisterResponse> {
   try {
     const { data } = await axios.post<RegisterResponse>(
-      baseUri + "/auth/register",
+      apiPath("/api/auth/register"),
       credentials
     );
     return data;
-  } catch (err: unknown) {
+  } catch (err: any) {
     if (axios.isAxiosError(err)) {
       const status = err.response?.status;
       const data: unknown = err.response?.data;
@@ -222,8 +232,8 @@ export function logoutUser() {
 
 export async function validateAccesToken(token: string): Promise<boolean> {
   try {
-    const response = await validationAxios.post<{ isValid: boolean }>(
-      "/auth/validate",
+    const response = await axios.post<{ isValid: boolean }>(
+      apiPath("/api/auth/validate"),
       token
     );
     return response.data.isValid;
@@ -238,7 +248,7 @@ export async function validateRefreshToken(
 ): Promise<BackendLoginResponse | null> {
   try {
     const res = await axios.post<BackendLoginResponse>(
-      baseUri + "/auth/refresh",
+      apiPath("/api/auth/refresh"),
       refreshToken
     );
 

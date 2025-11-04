@@ -9,6 +9,7 @@ import {
 import { useParams } from "react-router-dom";
 import type { MovieModel } from "../../models/movieModel";
 import { useAuth } from "../../hooks/useAuth";
+import placeholder from "../../assets/video-placeholder.jpg";
 
 function MovieDetails() {
   const { movieId } = useParams<{ movieId: string }>();
@@ -17,6 +18,8 @@ function MovieDetails() {
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false);
+  const uriStream =
+    import.meta.env.VITE_STREAMING_URL ?? "http://streaming-api:3000";
 
   useEffect(() => {
     if (movieId) {
@@ -24,9 +27,7 @@ function MovieDetails() {
         .then((res: MovieModel) => {
           setMovie(res);
           setVideoUrl(
-            `http://localhost:3000/api/torrent/${encodeURIComponent(
-              res.magnetUri
-            )}`
+            `${uriStream}/api/torrent/${encodeURIComponent(res.magnetUri)}`
           );
 
           // Check if movie is in favorites
@@ -40,7 +41,7 @@ function MovieDetails() {
           console.log(err);
         });
     }
-  }, [movieId, isAuthenticated, state.user?.id]);
+  }, [movieId, isAuthenticated, state.user?.id, uriStream]);
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated() || !state.user?.id || !movie) {
@@ -136,7 +137,7 @@ function MovieDetails() {
                 controls
                 controlsList="nodownload"
                 playsInline
-                poster={movie.screenshot[0]}
+                poster={placeholder}
               >
                 {/* Use relative URLs for subtitles too */}
                 <track

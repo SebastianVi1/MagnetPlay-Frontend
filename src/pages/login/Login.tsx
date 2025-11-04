@@ -1,6 +1,6 @@
 import styles from "./Login.module.css";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import logo from "../../assets/bg-login.jpg";
 import Button from "react-bootstrap/Button";
 import googleLogo from "../../assets/google_logo.jpg";
@@ -11,7 +11,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  
 
   const { signIn, state } = useAuth();
 

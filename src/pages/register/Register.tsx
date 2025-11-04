@@ -1,6 +1,6 @@
 import styles from "./Register.module.css";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import abstractBg from "../../assets/bg_register.jpg";
 import { useAuth } from "../../hooks/useAuth"; //
