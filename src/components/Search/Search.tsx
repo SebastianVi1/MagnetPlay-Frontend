@@ -47,9 +47,15 @@ export function Search() {
 
       try {
         const results = await searchMovies(debouncedSearchTerm);
+        console.log("Search results:", results);
 
         if (!cancelled) {
-          setMovies(results);
+          if (Array.isArray(results)) {
+            setMovies(results);
+          } else {
+            console.error("Search results is not an array:", results);
+            setMovies([]);
+          }
           setIsLoading(false);
         }
       } catch (error) {
@@ -129,7 +135,7 @@ export function Search() {
       )}
 
       {/* Results */}
-      {showResults && movies.length > 0 && (
+      {showResults && Array.isArray(movies) && movies.length > 0 && (
         <div className={styles.resultsContainer}>
           <ul className={styles.resultsGrid}>
             {movies.map((movie, index) => (
