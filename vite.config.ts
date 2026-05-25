@@ -16,13 +16,13 @@ export default defineConfig(({ mode }) => {
       host: "0.0.0.0", // Allow external connections
       port: 5173,
       proxy: {
-        "/api": {
-          target: apiUrl,
+        "/api/torrent": {
+          target: streamingUrl,
           changeOrigin: true,
           secure: false,
         },
-        "/api/torrent": {
-          target: streamingUrl,
+        "/api": {
+          target: apiUrl,
           changeOrigin: true,
           secure: false,
         },
