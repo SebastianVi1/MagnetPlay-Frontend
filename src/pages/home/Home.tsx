@@ -107,6 +107,9 @@ function Home() {
                     title={movie.name}
                     description={movie.description}
                     posterUri={movie.posterUri}
+                    tmdbPosterUrl={movie.tmdbPosterUrl}
+                    tmdbRating={movie.tmdbRating}
+                    releaseDate={movie.releaseDate}
                   />
                 </Link>
               </div>

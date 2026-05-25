@@ -11,6 +11,14 @@ import type { MovieModel } from "../../models/movieModel";
 import { useAuth } from "../../hooks/useAuth";
 import placeholder from "../../assets/video-placeholder.jpg";
 
+function formatRuntime(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h > 0 && m > 0) return `${h}h ${m}m`;
+  if (h > 0) return `${h}h`;
+  return `${m}m`;
+}
+
 function MovieDetails() {
   const { movieId } = useParams<{ movieId: string }>();
   const { state, isAuthenticated } = useAuth();
@@ -30,7 +38,6 @@ function MovieDetails() {
             `${uriStream}/api/torrent/${encodeURIComponent(res.magnetUri)}`
           );
 
-          // Check if movie is in favorites
           if (isAuthenticated() && state.user?.id) {
             checkIfFavorite(state.user.id, res.id)
               .then(setIsFavorite)
@@ -76,24 +83,40 @@ function MovieDetails() {
     );
   }
 
+  const backdropSrc = movie.tmdbBackdropUrl ?? movie.screenshot?.[0];
+  const posterSrc = movie.tmdbPosterUrl ?? movie.posterUri;
+  const overview = movie.tmdbOverview ?? movie.description;
+  const year = movie.releaseDate
+    ? movie.releaseDate.slice(0, 4)
+    : null;
+  const rating = movie.tmdbRating;
+
   return (
     <div className={styles.mainWrapper}>
       <div className={styles.mainContent}>
         <div className={styles.backgroundImage}>
-          {movie.screenshot && movie.screenshot.length > 0 && (
-            <img src={movie.screenshot[0]} alt="Background" />
+          {backdropSrc && (
+            <img src={backdropSrc} alt="Background" />
           )}
         </div>
         <div className={styles.movieContent}>
           <div className={styles.moviePoster}>
-            <img src={movie.posterUri} alt={movie.name} />
+            <img
+              src={posterSrc}
+              alt={movie.name}
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (movie.tmdbPosterUrl && target.src !== movie.posterUri) {
+                  target.src = movie.posterUri;
+                }
+              }}
+            />
           </div>
 
           <div className={styles.movieInfo}>
             <div className={styles.titleContainer}>
               <h1 className={styles.movieTitle}>{movie.name}</h1>
 
-              {/* Favorite Button */}
               <button
                 className={`${styles.favoriteButton} ${
                   isFavorite ? styles.favorited : ""
@@ -113,7 +136,20 @@ function MovieDetails() {
                 )}
               </button>
             </div>
-            {}
+
+            <div className={styles.metadataRow}>
+              {year && <span className={styles.movieYear}>{year}</span>}
+              {movie.runtime != null && movie.runtime > 0 && (
+                <span className={styles.movieDuration}>
+                  {formatRuntime(movie.runtime)}
+                </span>
+              )}
+              {rating != null && rating > 0 && (
+                <span className={styles.tmdbRating}>
+                  {"\u2B50"} {rating.toFixed(1)} / 10
+                </span>
+              )}
+            </div>
 
             {movie.genres && movie.genres.length > 0 && (
               <div className={styles.genresContainer}>
@@ -124,11 +160,7 @@ function MovieDetails() {
             )}
 
             <div className={styles.movieSynopsis}>
-              <p>
-                {movie.description != null
-                  ? movie.description
-                  : "No description"}
-              </p>
+              <p>{overview != null ? overview : "No description"}</p>
             </div>
 
             <div className={styles.videoPlayerContainer}>
@@ -139,7 +171,6 @@ function MovieDetails() {
                 playsInline
                 poster={placeholder}
               >
-                {/* Use relative URLs for subtitles too */}
                 <track
                   label="English"
                   kind="subtitles"

@@ -7,4 +7,11 @@ export type MovieModel = {
   magnetUri: string;
   genres: Array<string>;
   screenshot: Array<string>;
+  tmdbPosterUrl?: string;
+  tmdbBackdropUrl?: string;
+  tmdbRating?: number;
+  tmdbOverview?: string;
+  releaseDate?: string;
+  runtime?: number;
+  tmdbId?: number;
 };

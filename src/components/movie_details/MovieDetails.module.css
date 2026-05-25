@@ -83,6 +83,22 @@
   font-weight: 500;
 }
 
+.metadataRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.tmdbRating {
+  font-size: 16px;
+  color: #ffd700;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
 .genresContainer {
   display: flex;
   gap: 20px;
